@@ -12,6 +12,7 @@ pandas = "^2.2.3"
 sqlalchemy = "^2.0.35"
 mysql-connector-python = "^9.0.0"
 python-dotenv = "^1.0.1"
+pymongo = "^4.10.1"
 
 
 [build-system]
