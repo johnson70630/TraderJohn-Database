@@ -1,7 +1,7 @@
 import os
 import json
 import logging
-from datetime import datetime
+from datetime import datetime, date
 import dotenv
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import Application, CommandHandler, MessageHandler, CallbackContext, ConversationHandler, filters
@@ -10,6 +10,10 @@ from utils.data_processing import upload_json_to_mongodb, upload_csv_to_mysql
 from utils.query_data import get_mysql_tables, get_mongodb_collections, format_nested_fields
 from utils.query_generator import QueryGenerator
 from utils.execute_query import QueryExecutor
+
+from decimal import Decimal
+from typing import Dict, List, Any
+
 
 # Enable logging
 logging.basicConfig(
@@ -36,6 +40,65 @@ query_executor = QueryExecutor(
 
 # States for ConversationHandler
 CHOOSING, UPLOAD_FILE, QUERY_DATA = range(3)
+
+def format_value(value: Any) -> str:
+    """Format a value for table display."""
+    if value is None:
+        return 'NULL'
+    elif isinstance(value, (date, datetime)):
+        return value.strftime('%Y-%m-%d')
+    elif isinstance(value, Decimal):
+        return str(float(value))
+    elif isinstance(value, bool):
+        return str(int(value))
+    return str(value)
+
+def format_table(results: List[Dict[str, Any]]) -> str:
+    """Format results as an ASCII table."""
+    if not results:
+        return "Empty set"
+    
+    # Get column names from first row
+    columns = list(results[0].keys())
+    
+    # Get maximum width for each column
+    col_widths = {col: len(col) for col in columns}
+    for row in results:
+        for col in columns:
+            width = len(format_value(row[col]))
+            col_widths[col] = max(col_widths[col], width)
+    
+    # Create the table header
+    header = "+"
+    for col in columns:
+        header += "-" * (col_widths[col] + 2) + "+"
+    
+    column_names = "|"
+    for col in columns:
+        column_names += f" {col}{' ' * (col_widths[col] - len(col))} |"
+    
+    # Create the table body
+    rows = []
+    for row in results:
+        row_str = "|"
+        for col in columns:
+            value = format_value(row[col])
+            row_str += f" {value}{' ' * (col_widths[col] - len(value))} |"
+        rows.append(row_str)
+    
+    # Combine all parts
+    table = [
+        header,
+        column_names,
+        header,
+        *rows,
+        header
+    ]
+    
+    # Add result count
+    table.append(f"\n{len(results)} rows in set\n")
+    
+    return "\n".join(table)
 
 async def start(update: Update, context: CallbackContext) -> int:
     """Start the conversation and show main menu."""
@@ -207,7 +270,7 @@ async def show_data_overview(update: Update, context: CallbackContext) -> int:
         return CHOOSING
 
 async def handle_query(update: Update, context: CallbackContext) -> int:
-    """Handle natural language queries."""
+    """Handle natural language queries with table format output."""
     try:
         user_input = update.message.text
         
@@ -236,34 +299,52 @@ async def handle_query(update: Update, context: CallbackContext) -> int:
             # MongoDB query
             mongo_query = query_generator.generate_mongodb_query(components)
             results = query_executor.execute_mongodb_query(target, mongo_query)
-            query_text = f"MongoDB Query:\n```json\n{json.dumps(mongo_query, indent=2)}\n```\n\n"
+            query_text = f"MongoDB Query:\n```json\n{json.dumps(mongo_query, indent=2)}\n```\n"
             
         elif target in mysql_tables:
             # SQL query
             sql_query = query_generator.generate_sql_query(components)
             results = query_executor.execute_sql_query(sql_query)
-            query_text = f"SQL Query:\n```sql\n{sql_query}\n```\n\n"
+            query_text = f"SQL Query:\n```sql\n{sql_query}\n```\n"
         
         else:
             await update.message.reply_text(f"Could not find table or collection named '{target}'")
             return QUERY_DATA
         
-        # Format results
-        response = query_text + "Results:\n```json\n"
+        # Format results as table
         if results:
-            # Limit results display
-            display_results = results[:10]
-            response += json.dumps(display_results, indent=2)
-            if len(results) > 10:
-                response += f"\n\n... and {len(results) - 10} more results"
+            results_list = list(results)
+            displayed_results = results_list[:10]  # Limit to 10 rows
+            
+            response = query_text + "\nResults:\n```\n"
+            response += format_table(displayed_results)
+            
+            if len(results_list) > 10:
+                response += f"\n(Showing first 10 of {len(results_list)} rows)\n"
+            
+            response += "```"
+            
+            # Handle long messages
+            if len(response) > 4000:
+                # Send query first
+                await update.message.reply_text(query_text, parse_mode="Markdown")
+                
+                # Then send results with fewer rows
+                results_text = "Results:\n```\n"
+                results_text += format_table(displayed_results[:5])  # Show only 5 rows
+                results_text += f"\n(Showing first 5 of {len(results_list)} rows)\n```"
+                
+                await update.message.reply_text(results_text, parse_mode="Markdown")
+            else:
+                await update.message.reply_text(response, parse_mode="Markdown")
         else:
-            response += "No results found"
-        response += "\n```"
-        
-        await update.message.reply_text(response, parse_mode="Markdown")
+            response = query_text + "\n```\nEmpty set\n```"
+            await update.message.reply_text(response, parse_mode="Markdown")
+            
         return QUERY_DATA
         
     except Exception as e:
+        logger.error(f"Query error: {str(e)}", exc_info=True)
         await update.message.reply_text(f"Error processing query: {str(e)}")
         return QUERY_DATA
 
