@@ -1,7 +1,7 @@
 import os
 import json
 import logging
-from datetime import datetime, date
+from datetime import datetime
 import dotenv
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import Application, CommandHandler, MessageHandler, CallbackContext, ConversationHandler, filters
@@ -10,10 +10,7 @@ from utils.data_processing import upload_json_to_mongodb, upload_csv_to_mysql
 from utils.query_data import get_mysql_tables, get_mongodb_collections, format_nested_fields
 from utils.query_generator import QueryGenerator
 from utils.execute_query import QueryExecutor
-
-from decimal import Decimal
-from typing import Dict, List, Any
-
+from utils.format import format_table
 
 # Enable logging
 logging.basicConfig(
@@ -40,65 +37,6 @@ query_executor = QueryExecutor(
 
 # States for ConversationHandler
 CHOOSING, UPLOAD_FILE, QUERY_DATA = range(3)
-
-def format_value(value: Any) -> str:
-    """Format a value for table display."""
-    if value is None:
-        return 'NULL'
-    elif isinstance(value, (date, datetime)):
-        return value.strftime('%Y-%m-%d')
-    elif isinstance(value, Decimal):
-        return str(float(value))
-    elif isinstance(value, bool):
-        return str(int(value))
-    return str(value)
-
-def format_table(results: List[Dict[str, Any]]) -> str:
-    """Format results as an ASCII table."""
-    if not results:
-        return "Empty set"
-    
-    # Get column names from first row
-    columns = list(results[0].keys())
-    
-    # Get maximum width for each column
-    col_widths = {col: len(col) for col in columns}
-    for row in results:
-        for col in columns:
-            width = len(format_value(row[col]))
-            col_widths[col] = max(col_widths[col], width)
-    
-    # Create the table header
-    header = "+"
-    for col in columns:
-        header += "-" * (col_widths[col] + 2) + "+"
-    
-    column_names = "|"
-    for col in columns:
-        column_names += f" {col}{' ' * (col_widths[col] - len(col))} |"
-    
-    # Create the table body
-    rows = []
-    for row in results:
-        row_str = "|"
-        for col in columns:
-            value = format_value(row[col])
-            row_str += f" {value}{' ' * (col_widths[col] - len(value))} |"
-        rows.append(row_str)
-    
-    # Combine all parts
-    table = [
-        header,
-        column_names,
-        header,
-        *rows,
-        header
-    ]
-    
-    # Add result count
-    table.append(f"\n{len(results)} rows in set\n")
-    
-    return "\n".join(table)
 
 async def start(update: Update, context: CallbackContext) -> int:
     """Start the conversation and show main menu."""
@@ -237,7 +175,7 @@ async def show_data_overview(update: Update, context: CallbackContext) -> int:
         response = "📊 **Available Data Sources**:\n\n"
         
         # MongoDB collections
-        response += "**MongoDB Collections:**\n"
+        response += "MongoDB Collections:\n"
         for collection, fields in mongodb_details.items():
             response += f"\n🔹 {collection}:\n"
             if fields:
@@ -246,14 +184,14 @@ async def show_data_overview(update: Update, context: CallbackContext) -> int:
                 response += "  (Empty collection)\n"
         
         # MySQL tables
-        response += "\n**MySQL Tables:**\n"
+        response += "\nMySQL Tables:\n"
         for table, columns in mysql_details.items():
             response += f"\n🔹 {table}:\n"
             for column_name, data_type in columns:
                 response += f"  • {column_name}: {data_type}\n"
         
         # Query examples
-        response += "\n🔍 **Example Queries:**\n"
+        response += "\n🔍 Example Queries:\n"
         response += "• 'Show all records from [table_name]'\n"
         response += "• 'Find items where [field] > [value]'\n"
         response += "• 'Calculate average [field] from [table_name]'\n\n"
@@ -370,15 +308,18 @@ def main() -> None:
                 MessageHandler(filters.Regex('^Query Data$'), show_data_overview),
                 MessageHandler(filters.Regex('^Help$'), help_command),
                 MessageHandler(filters.Regex('^Exit$'), cancel),
+                MessageHandler(filters.Regex('^Back to Menu$'), start),
+                CommandHandler('start', start),
             ],
             UPLOAD_FILE: [
                 MessageHandler(filters.Regex('^(CSV|JSON)$'), handle_file_type_selection),
                 MessageHandler(filters.Regex('^Back to Menu$'), start),
                 MessageHandler(filters.Document.ALL, handle_file_upload),
+                CommandHandler('start', start),
             ],
             QUERY_DATA: [
-                MessageHandler(filters.Regex('^Back to Menu$'), start),
                 MessageHandler(filters.TEXT & ~filters.COMMAND, handle_query),
+                CommandHandler('start', start),
             ],
         },
         fallbacks=[

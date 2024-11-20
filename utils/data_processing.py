@@ -20,22 +20,39 @@ db_config = {
     'database': os.getenv('DB_NAME')      # Database name
 }
 
-def upload_json_to_mongodb(file_path: str, collection_name: str) -> None:
+def upload_json_to_mongodb(file_path: str, collection_name: str, batch_size: int = 1000) -> None:
     """
-    Processes a JSON file and stores its content in a specified MongoDB collection.
+    Processes a JSON Lines file and stores its content in a specified MongoDB collection.
     :param file_path: Path to the JSON file.
     :param collection_name: Name of the MongoDB collection to store data in.
+    :param batch_size: Number of documents to insert in one batch.
     """
     mongo_collection = mongo_db[collection_name]  # Access or create the collection
 
     with open(file_path, 'r') as json_file:
-        json_data = json.load(json_file)
-        if isinstance(json_data, dict):  # Single JSON object
-            mongo_collection.insert_one(json_data)
-        elif isinstance(json_data, list):  # List of JSON objects
-            mongo_collection.insert_many(json_data)
+        documents = []
+        total_uploaded = 0
 
-    print(f"JSON data has been uploaded to the '{collection_name}' collection in MongoDB.")
+        for line_number, line in enumerate(json_file, start=1):
+            try:
+                # Parse each line as a JSON object
+                json_obj = json.loads(line.strip())
+                documents.append(json_obj)
+
+                # Insert in batches
+                if len(documents) >= batch_size:
+                    mongo_collection.insert_many(documents)
+                    total_uploaded += len(documents)
+                    documents.clear()  # Clear the batch after insertion
+            except json.JSONDecodeError as e:
+                print(f"Error parsing line {line_number}: {line.strip()}\n{e}")
+
+        # Insert any remaining documents
+        if documents:
+            mongo_collection.insert_many(documents)
+            total_uploaded += len(documents)
+
+        print(f"Uploaded {total_uploaded} documents to the '{collection_name}' collection in MongoDB.")
 
 
 def upload_csv_to_mysql(file_path: str, table_name: str = 'uploaded_data') -> None:
