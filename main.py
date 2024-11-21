@@ -11,7 +11,6 @@ from utils.data_processing import upload_json_to_mongodb, upload_csv_to_mysql
 from utils.query_data import get_mysql_tables, get_mongodb_collections, format_nested_fields
 from utils.query_generator import QueryGenerator
 from utils.execute_query import QueryExecutor
-from utils.format import format_table_in_chunks
 
 # Enable logging
 logging.basicConfig(
@@ -43,7 +42,7 @@ async def start(update: Update, context: CallbackContext) -> int:
     """Start the conversation and show main menu."""
     keyboard = [
         ["Upload Data", "Query Data"],
-        ["Help", "Exit"]
+        ["Sample Queries", "Help", "Exit"]
     ]
     reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True, resize_keyboard=True)
     
@@ -320,8 +319,7 @@ async def handle_query(update: Update, context: CallbackContext) -> int:
         if not selected_db:
             await update.message.reply_text(
                 "Please select a database type first.",
-                reply_markup=ReplyKeyboardMarkup([["Query MongoDB", "Query MySQL"], ["Back to Menu"]], 
-                                               resize_keyboard=True)
+                reply_markup=ReplyKeyboardMarkup([["Query MongoDB", "Query MySQL"], ["Back to Menu"]], resize_keyboard=True)
             )
             return QUERY_DATA
 
@@ -487,14 +485,11 @@ async def handle_query(update: Update, context: CallbackContext) -> int:
                 await update.message.reply_text(f"Error executing query: {str(e)}")
             
             return QUERY_DATA
-
-        return QUERY_DATA
         
     except Exception as e:
         logger.error(f"Query error: {str(e)}", exc_info=True)
         await update.message.reply_text(f"Error processing query: {str(e)}")
         return QUERY_DATA
-    
     
 async def cancel(update: Update, context: CallbackContext) -> int:
     """Cancel conversation."""
@@ -503,6 +498,38 @@ async def cancel(update: Update, context: CallbackContext) -> int:
         reply_markup=ReplyKeyboardRemove()
     )
     return ConversationHandler.END
+
+async def show_sample_queries(update: Update, context: CallbackContext) -> int:
+    """Show sample queries and their outputs."""
+    sample_queries = [
+        {
+            "query": "Show all orders where price > 100",
+            "output": "OrderID | Price\n12345   | 120\n12346   | 150"
+        },
+        {
+            "query": "Find top 5 customers with highest total_spent",
+            "output": "CustomerID | Total_Spent\nC001       | 5000\nC002       | 4500"
+        },
+        {
+            "query": "Calculate average price from products",
+            "output": "Average Price: 75.5"
+        },
+        {
+            "query": "Count orders by customer_id",
+            "output": "CustomerID | OrderCount\nC001       | 5\nC002       | 3"
+        },
+    ]
+
+    response = "💡 **Sample Queries and Outputs**:\n\n"
+    for i, example in enumerate(sample_queries, 1):
+        response += f"**{i}. Query:** `{example['query']}`\n"
+        response += f"**Output:**\n```\n{example['output']}\n```\n\n"
+
+    keyboard = [["Back to Menu"]]
+    reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True, resize_keyboard=True)
+    
+    await update.message.reply_text(response, reply_markup=reply_markup, parse_mode="Markdown")
+    return CHOOSING
 
 def main() -> None:
     """Run the bot."""
@@ -516,8 +543,10 @@ def main() -> None:
             CHOOSING: [
                 MessageHandler(filters.Regex('^Upload Data$'), handle_upload_data),
                 MessageHandler(filters.Regex('^Query Data$'), show_data_overview),
+                MessageHandler(filters.Regex('^Sample Queries$'), show_sample_queries),
                 MessageHandler(filters.Regex('^Help$'), help_command),
                 MessageHandler(filters.Regex('^Exit$'), cancel),
+                MessageHandler(filters.Regex('^Back to Menu$'), start)
             ],
             UPLOAD_FILE: [
                 MessageHandler(filters.Regex('^(CSV|JSON)$'), handle_file_type_selection),
