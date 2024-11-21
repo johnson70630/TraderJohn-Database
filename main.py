@@ -1,6 +1,7 @@
 import os
 import json
 import logging
+import re
 from datetime import datetime
 import dotenv
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
@@ -10,7 +11,7 @@ from utils.data_processing import upload_json_to_mongodb, upload_csv_to_mysql
 from utils.query_data import get_mysql_tables, get_mongodb_collections, format_nested_fields
 from utils.query_generator import QueryGenerator
 from utils.execute_query import QueryExecutor
-from utils.format import format_table
+from utils.format import format_table_in_chunks
 
 # Enable logging
 logging.basicConfig(
@@ -169,123 +170,332 @@ async def show_data_overview(update: Update, context: CallbackContext) -> int:
     """Show overview of available data and accept natural language queries."""
     try:
         # Get available data sources
-        mongodb_details = get_mongodb_collections()
-        mysql_details = get_mysql_tables()
+        mongodb_details = {}
+        mysql_details = {}
+
+        # Get MongoDB collections
+        try:
+            mongodb_details = get_mongodb_collections()
+            logger.info(f"MongoDB collections found: {list(mongodb_details.keys())}")
+        except Exception as e:
+            logger.error(f"MongoDB error: {str(e)}")
+            mongodb_details = {}
+
+        # Get MySQL tables
+        try:
+            mysql_details = get_mysql_tables()
+            logger.info(f"MySQL tables found: {list(mysql_details.keys())}")
+        except Exception as e:
+            logger.error(f"MySQL error: {str(e)}")
+            mysql_details = {}
+
+        # Store in user context
+        context.user_data.clear()  # Clear previous data
+        context.user_data['mongodb_collections'] = list(mongodb_details.keys())
+        context.user_data['mysql_tables'] = list(mysql_details.keys())
+        
+        keyboard = [
+            ["Query MongoDB", "Query MySQL"],
+            ["Back to Menu"]
+        ]
+        reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True, resize_keyboard=True)
         
         response = "📊 **Available Data Sources**:\n\n"
         
-        # MongoDB collections
-        response += "MongoDB Collections:\n"
-        for collection, fields in mongodb_details.items():
-            response += f"\n🔹 {collection}:\n"
-            if fields:
-                response += format_nested_fields(fields)
-            else:
-                response += "  (Empty collection)\n"
+        # MongoDB collections section
+        response += "**MongoDB Collections:**\n"
+        if mongodb_details:
+            for collection, fields in mongodb_details.items():
+                response += f"\n🔹 {collection}:\n"
+                if fields:
+                    response += format_nested_fields(fields)
+                else:
+                    response += "  (Empty collection)\n"
+        else:
+            response += "(No collections available)\n"
         
-        # MySQL tables
-        response += "\nMySQL Tables:\n"
-        for table, columns in mysql_details.items():
-            response += f"\n🔹 {table}:\n"
-            for column_name, data_type in columns:
-                response += f"  • {column_name}: {data_type}\n"
+        # MySQL tables section
+        response += "\n**MySQL Tables:**\n"
+        if mysql_details:
+            for table, columns in mysql_details.items():
+                response += f"\n🔹 {table}:\n"
+                for column_name, data_type in columns:
+                    response += f"  • {column_name}: {data_type}\n"
+        else:
+            response += "(No tables available)\n"
         
-        # Query examples
-        response += "\n🔍 Example Queries:\n"
-        response += "• 'Show all records from [table_name]'\n"
-        response += "• 'Find items where [field] > [value]'\n"
-        response += "• 'Calculate average [field] from [table_name]'\n\n"
-        response += "Type your query or use 'Back to Menu' to return:"
-        
-        keyboard = [["Back to Menu"]]
-        reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=False, resize_keyboard=True)
+        response += "\n🔍 **To query data, first select the database type you want to query from the keyboard below.**"
         
         await update.message.reply_text(response, reply_markup=reply_markup, parse_mode="Markdown")
         return QUERY_DATA
         
     except Exception as e:
-        await update.message.reply_text(f"Error retrieving data overview: {str(e)}")
+        logger.error(f"Error in show_data_overview: {str(e)}", exc_info=True)
+        await update.message.reply_text(
+            "An error occurred while retrieving data sources. Please try again.",
+            reply_markup=ReplyKeyboardMarkup([["Back to Menu"]], resize_keyboard=True)
+        )
         return CHOOSING
+    
 
-async def handle_query(update: Update, context: CallbackContext) -> int:
-    """Handle natural language queries with table format output."""
+async def handle_database_selection(update: Update, context: CallbackContext) -> int:
+    """Handle database type selection for querying."""
     try:
-        user_input = update.message.text
+        selection = update.message.text.strip()
+        logger.info(f"Database selection: {selection}")
+
+        if selection == "Back to Menu":
+            return await start(update, context)
+
+        # Verify context data exists
+        if 'mongodb_collections' not in context.user_data or 'mysql_tables' not in context.user_data:
+            logger.error("Missing database info in context")
+            # Try to refresh the data
+            mongodb_details = get_mongodb_collections()
+            mysql_details = get_mysql_tables()
+            context.user_data['mongodb_collections'] = list(mongodb_details.keys())
+            context.user_data['mysql_tables'] = list(mysql_details.keys())
+
+        if selection == "Query MongoDB":
+            collections = context.user_data.get('mongodb_collections', [])
+            if not collections:
+                await update.message.reply_text("No MongoDB collections available.")
+                return QUERY_DATA
+
+            response = (
+                "📚 Available MongoDB Collections:\n\n" +
+                "\n".join([f"• {coll}" for coll in collections]) +
+                "\n\n🔍 Query Examples:\n" +
+                "• Type collection name to see all documents\n" +
+                "• `find in [collection] where field > value`\n" +
+                "• `count documents in [collection] grouped by field`"
+            )
+
+        elif selection == "Query MySQL":
+            tables = context.user_data.get('mysql_tables', [])
+            if not tables:
+                await update.message.reply_text("No MySQL tables available.")
+                return QUERY_DATA
+
+            response = (
+                "📚 Available MySQL Tables:\n\n" +
+                "\n".join([f"• {table}" for table in tables]) +
+                "\n\n🔍 Query Examples:\n" +
+                "• Type table name to see first 10 rows\n" +
+                "• `select * from [table] where [condition]`\n" +
+                "• `find top 5 rows in [table] ordered by [column]`"
+            )
+
+        context.user_data['selected_db'] = selection
+        keyboard = [["Back to Menu"]]
+        reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=False, resize_keyboard=True)
+        
+        try:
+            await update.message.reply_text(response, reply_markup=reply_markup, parse_mode="Markdown")
+        except Exception as e:
+            logger.error(f"Failed to send message with Markdown: {str(e)}")
+            # Try sending without Markdown formatting
+            await update.message.reply_text(response, reply_markup=reply_markup)
+            
+        return QUERY_DATA
+
+    except Exception as e:
+        logger.error(f"Database selection error: {str(e)}", exc_info=True)
+        await update.message.reply_text(
+            "An error occurred. Please select 'Query Data' from the main menu.",
+            reply_markup=ReplyKeyboardMarkup([["Back to Menu"]], resize_keyboard=True)
+        )
+        return CHOOSING
+    
+async def handle_query(update: Update, context: CallbackContext) -> int:
+    """Handle natural language queries."""
+    try:
+        user_input = update.message.text.strip()
+        logger.info(f"Processing query: {user_input}")
         
         if user_input.lower() == 'back to menu':
             return await start(update, context)
         
-        # Extract query components
-        components = query_generator.extract_query_components(user_input)
-        
-        if not components['from']:
+        selected_db = context.user_data.get('selected_db')
+        if not selected_db:
             await update.message.reply_text(
-                "Please specify which table or collection you want to query. "
-                "You can see available options with 'Query Data'."
+                "Please select a database type first.",
+                reply_markup=ReplyKeyboardMarkup([["Query MongoDB", "Query MySQL"], ["Back to Menu"]], 
+                                               resize_keyboard=True)
             )
             return QUERY_DATA
-        
-        # Determine target database
-        mongodb_collections = get_mongodb_collections()
-        mysql_tables = get_mysql_tables()
-        
-        target = components['from']
-        results = None
-        query_text = ""
-        
-        if target in mongodb_collections:
-            # MongoDB query
-            mongo_query = query_generator.generate_mongodb_query(components)
-            results = query_executor.execute_mongodb_query(target, mongo_query)
-            query_text = f"MongoDB Query:\n```json\n{json.dumps(mongo_query, indent=2)}\n```\n"
+
+        # Handle MongoDB Query
+        if selected_db == "Query MongoDB":
+            collections = context.user_data.get('mongodb_collections', set())
             
-        elif target in mysql_tables:
-            # SQL query
-            sql_query = query_generator.generate_sql_query(components)
-            results = query_executor.execute_sql_query(sql_query)
-            query_text = f"SQL Query:\n```sql\n{sql_query}\n```\n"
-        
-        else:
-            await update.message.reply_text(f"Could not find table or collection named '{target}'")
+            # Parse query patterns
+            query_patterns = {
+                'find_all': r'^find\s+all\s+(\w+)$',
+                'show_all_field': r'^show\s+all\s+(\w+)\s+(?:in|from)\s+(\w+)$',
+                'collection_name': r'^(\w+)$'
+            }
+            
+            # Try to match each pattern
+            mongo_query = None
+            target = None
+            field = None
+            
+            for pattern_name, pattern in query_patterns.items():
+                match = re.match(pattern, user_input.lower())
+                if match:
+                    if pattern_name == 'find_all':
+                        target = match.group(1)
+                        mongo_query = {'find': {}}
+                    elif pattern_name == 'show_all_field':
+                        field = match.group(1)
+                        target = match.group(2)
+                        mongo_query = {
+                            'find': {},
+                            'projection': {field: 1, '_id': 0}
+                        }
+                    elif pattern_name == 'collection_name':
+                        target = match.group(1)
+                        mongo_query = {'find': {}}
+                    break
+            
+            # Validate collection name
+            if not target or target not in collections:
+                await update.message.reply_text(
+                    f"Please specify a valid collection name.\n\n"
+                    f"Available collections:\n" +
+                    "\n".join([f"• {coll}" for coll in collections])
+                )
+                return QUERY_DATA
+            
+            # Execute MongoDB query
+            try:
+                # Send query
+                await update.message.reply_text(
+                    f"MongoDB Query:\n```json\n{json.dumps(mongo_query, indent=2)}\n```",
+                    parse_mode="Markdown"
+                )
+                
+                # Execute query
+                results = query_executor.execute_mongodb_query(target, mongo_query)
+                results_list = list(results)[:10]
+                
+                if results_list:
+                    # Send results in smaller chunks
+                    for i, doc in enumerate(results_list, 1):
+                        msg = json.dumps(doc, indent=2, default=str).replace('{', '\\{').replace('}', '\\}')
+                        await update.message.reply_text(
+                            f"Document {i}:\n```\n{msg}\n```",
+                            parse_mode="Markdown"
+                        )
+                    
+                    if len(results_list) == 10:
+                        await update.message.reply_text("(Showing first 10 documents)")
+                else:
+                    await update.message.reply_text("No documents found.")
+            
+            except Exception as e:
+                logger.error(f"MongoDB execution error: {str(e)}")
+                await update.message.reply_text(f"Error executing query: {str(e)}")
+            
             return QUERY_DATA
-        
-        # Format results as table
-        if results:
-            results_list = list(results)
-            displayed_results = results_list[:10]  # Limit to 10 rows
+
+        # Handle MySQL Query
+        else:  # MySQL
+            tables = context.user_data.get('mysql_tables', set())
             
-            response = query_text + "\nResults:\n```\n"
-            response += format_table(displayed_results)
+            # Parse query patterns
+            query_patterns = {
+                'find_all': r'^find\s+all\s+(\w+)$',
+                'show_all_field': r'^show\s+all\s+(\w+)\s+(?:in|from)\s+(\w+)$',
+                'table_name': r'^(\w+)$'
+            }
             
-            if len(results_list) > 10:
-                response += f"\n(Showing first 10 of {len(results_list)} rows)\n"
+            # Try to match each pattern
+            sql_query = None
+            target = None
             
-            response += "```"
+            for pattern_name, pattern in query_patterns.items():
+                match = re.match(pattern, user_input.lower())
+                if match:
+                    if pattern_name == 'find_all':
+                        target = match.group(1)
+                        sql_query = f"SELECT * FROM {target} LIMIT 10"
+                    elif pattern_name == 'show_all_field':
+                        field = match.group(1)
+                        target = match.group(2)
+                        sql_query = f"SELECT {field} FROM {target} LIMIT 10"
+                    elif pattern_name == 'table_name':
+                        target = match.group(1)
+                        sql_query = f"SELECT * FROM {target} LIMIT 10"
+                    break
             
-            # Handle long messages
-            if len(response) > 4000:
-                # Send query first
-                await update.message.reply_text(query_text, parse_mode="Markdown")
+            # Validate table name
+            if not target or target not in tables:
+                await update.message.reply_text(
+                    f"Please specify a valid table name.\n\n"
+                    f"Available tables:\n" +
+                    "\n".join([f"• {table}" for table in tables])
+                )
+                return QUERY_DATA
+            
+            # Execute MySQL query
+            try:
+                # Send query
+                await update.message.reply_text(
+                    f"SQL Query:\n```sql\n{sql_query}\n```",
+                    parse_mode="Markdown"
+                )
                 
-                # Then send results with fewer rows
-                results_text = "Results:\n```\n"
-                results_text += format_table(displayed_results[:5])  # Show only 5 rows
-                results_text += f"\n(Showing first 5 of {len(results_list)} rows)\n```"
+                # Execute query
+                results = query_executor.execute_sql_query(sql_query)
                 
-                await update.message.reply_text(results_text, parse_mode="Markdown")
-            else:
-                await update.message.reply_text(response, parse_mode="Markdown")
-        else:
-            response = query_text + "\n```\nEmpty set\n```"
-            await update.message.reply_text(response, parse_mode="Markdown")
+                if not results:
+                    await update.message.reply_text("No results found.")
+                    return QUERY_DATA
+                
+                # Format in vertical chunks of 5 columns
+                columns = list(results[0].keys())
+                
+                # Group columns into sets of 5
+                for i in range(0, len(columns), 5):
+                    col_group = columns[i:i+5]
+                    
+                    # Create mini table for this column group
+                    header = " | ".join(f"{col:15}" for col in col_group)
+                    separator = "-" * len(header)
+                    
+                    rows = []
+                    for row in results:
+                        row_values = [f"{str(row[col]):15}" for col in col_group]
+                        rows.append(" | ".join(row_values))
+                    
+                    group_table = f"Columns {i+1}-{i+len(col_group)}:\n"
+                    group_table += header + "\n" + separator + "\n"
+                    group_table += "\n".join(rows)
+                    
+                    # Send each column group separately
+                    await update.message.reply_text(
+                        f"```\n{group_table}\n```",
+                        parse_mode="Markdown"
+                    )
+                
+                await update.message.reply_text(f"\nTotal rows: {len(results)}")
+                
+            except Exception as e:
+                logger.error(f"MySQL execution error: {str(e)}")
+                await update.message.reply_text(f"Error executing query: {str(e)}")
             
+            return QUERY_DATA
+
         return QUERY_DATA
         
     except Exception as e:
         logger.error(f"Query error: {str(e)}", exc_info=True)
         await update.message.reply_text(f"Error processing query: {str(e)}")
         return QUERY_DATA
-
+    
+    
 async def cancel(update: Update, context: CallbackContext) -> int:
     """Cancel conversation."""
     await update.message.reply_text(
@@ -299,7 +509,7 @@ def main() -> None:
     # Create the Application and pass it your bot's token
     application = Application.builder().token(os.getenv('BOT_TOKEN')).build()
     
-    # Set up conversation handler
+    # Set up conversation handler with explicit handler for database selection
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler('start', start)],
         states={
@@ -308,18 +518,18 @@ def main() -> None:
                 MessageHandler(filters.Regex('^Query Data$'), show_data_overview),
                 MessageHandler(filters.Regex('^Help$'), help_command),
                 MessageHandler(filters.Regex('^Exit$'), cancel),
-                MessageHandler(filters.Regex('^Back to Menu$'), start),
-                CommandHandler('start', start),
             ],
             UPLOAD_FILE: [
                 MessageHandler(filters.Regex('^(CSV|JSON)$'), handle_file_type_selection),
                 MessageHandler(filters.Regex('^Back to Menu$'), start),
                 MessageHandler(filters.Document.ALL, handle_file_upload),
-                CommandHandler('start', start),
             ],
             QUERY_DATA: [
+                # Explicitly handle both MongoDB and MySQL selection
+                MessageHandler(filters.Regex('^Query MongoDB$'), handle_database_selection),
+                MessageHandler(filters.Regex('^Query MySQL$'), handle_database_selection),
+                MessageHandler(filters.Regex('^Back to Menu$'), start),
                 MessageHandler(filters.TEXT & ~filters.COMMAND, handle_query),
-                CommandHandler('start', start),
             ],
         },
         fallbacks=[
@@ -328,11 +538,25 @@ def main() -> None:
         ],
     )
     
-    # Add conversation handler and help command
     application.add_handler(conv_handler)
-    
-    # Start the Bot
     application.run_polling()
+    
+def test_database_connections():
+    """Test both database connections and print results."""
+    # Test MySQL
+    try:
+        mysql_tables = get_mysql_tables()
+        print(f"MySQL Connection Successful. Tables found: {list(mysql_tables.keys())}")
+    except Exception as e:
+        print(f"MySQL Connection Error: {str(e)}")
+
+    # Test MongoDB
+    try:
+        mongo_collections = get_mongodb_collections()
+        print(f"MongoDB Connection Successful. Collections found: {list(mongo_collections.keys())}")
+    except Exception as e:
+        print(f"MongoDB Connection Error: {str(e)}")
 
 if __name__ == '__main__':
+    test_database_connections()
     main()
