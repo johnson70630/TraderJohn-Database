@@ -9,7 +9,7 @@ import logging
 class QueryGenerator:
     def __init__(self):
         # Download required NLTK data
-        for package in ['punkt', 'averaged_perceptron_tagger', 'stopwords', 'wordnet']:
+        for package in ['punkt', 'averaged_perceptron_tagger', 'stopwords', 'wordnet', 'punkt_tab', 'averaged_perceptron_tagger_eng']:
             try:
                 nltk.download(package, quiet=True)
             except Exception as e:
