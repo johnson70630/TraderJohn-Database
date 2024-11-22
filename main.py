@@ -500,34 +500,83 @@ async def cancel(update: Update, context: CallbackContext) -> int:
     return ConversationHandler.END
 
 async def show_sample_queries(update: Update, context: CallbackContext) -> int:
-    """Show sample queries and their outputs."""
+    """Show sample queries and their outputs with natural language descriptions."""
     sample_queries = [
+        # MySQL Examples
         {
-            "query": "Show all orders where price > 100",
+            "type": "MySQL",
+            "description": "Retrieve all orders where the price is greater than 100.",
+            "query": "SELECT * FROM orders WHERE price > 100;",
             "output": "OrderID | Price\n12345   | 120\n12346   | 150"
         },
         {
-            "query": "Find top 5 customers with highest total_spent",
+            "type": "MySQL",
+            "description": "Calculate the total spending for each customer.",
+            "query": "SELECT customer_id, SUM(total_spent) FROM customers GROUP BY customer_id;",
             "output": "CustomerID | Total_Spent\nC001       | 5000\nC002       | 4500"
         },
         {
-            "query": "Calculate average price from products",
+            "type": "MySQL",
+            "description": "Find the average price of all products.",
+            "query": "SELECT AVG(price) FROM products;",
             "output": "Average Price: 75.5"
         },
         {
-            "query": "Count orders by customer_id",
+            "type": "MySQL",
+            "description": "Count the number of orders placed by each customer.",
+            "query": "SELECT customer_id, COUNT(order_id) FROM orders GROUP BY customer_id;",
             "output": "CustomerID | OrderCount\nC001       | 5\nC002       | 3"
+        },
+        # MongoDB Examples
+        {
+            "type": "MongoDB",
+            "description": "Retrieve all orders where the price is greater than 100.",
+            "query": "db.orders.find({ price: { $gt: 100 } });",
+            "output": "[\n  { OrderID: 12345, Price: 120 },\n  { OrderID: 12346, Price: 150 }\n]"
+        },
+        {
+            "type": "MongoDB",
+            "description": "Calculate the total spending for each customer.",
+            "query": "db.customers.aggregate([ { $group: { _id: '$customer_id', totalSpent: { $sum: '$total_spent' } } } ]);",
+            "output": "[\n  { _id: 'C001', totalSpent: 5000 },\n  { _id: 'C002', totalSpent: 4500 }\n]"
+        },
+        {
+            "type": "MongoDB",
+            "description": "Find the average price of all products.",
+            "query": "db.products.aggregate([ { $group: { _id: null, avgPrice: { $avg: '$price' } } } ]);",
+            "output": "[\n  { _id: null, avgPrice: 75.5 }\n]"
+        },
+        {
+            "type": "MongoDB",
+            "description": "Count the number of orders placed by each customer.",
+            "query": "db.orders.aggregate([ { $group: { _id: '$customer_id', orderCount: { $sum: 1 } } } ]);",
+            "output": "[\n  { _id: 'C001', orderCount: 5 },\n  { _id: 'C002', orderCount: 3 }\n]"
         },
     ]
 
     response = "💡 **Sample Queries and Outputs**:\n\n"
     for i, example in enumerate(sample_queries, 1):
-        response += f"**{i}. Query:** `{example['query']}`\n"
-        response += f"**Output:**\n```\n{example['output']}\n```\n\n"
+        # Send the description
+        await update.message.reply_text(
+            f"**{i}. [{example['type']}]**\n\n"
+            f"**Description:** `{example['description']}`\n\n",
+            parse_mode="Markdown"
+        )
+        # Send the query
+        await update.message.reply_text(
+            f"**Query:**\n```{example['query']}```",
+            parse_mode="Markdown"
+        )
+        # Send the output
+        await update.message.reply_text(
+            f"**Output:**\n```\n{example['output']}\n```",
+            parse_mode="Markdown"
+        )
+
 
     keyboard = [["Back to Menu"]]
     reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True, resize_keyboard=True)
-    
+
     await update.message.reply_text(response, reply_markup=reply_markup, parse_mode="Markdown")
     return CHOOSING
 
