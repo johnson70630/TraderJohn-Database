@@ -555,6 +555,10 @@ async def show_sample_queries(update: Update, context: CallbackContext) -> int:
     ]
 
     response = "💡 **Sample Queries and Outputs**:\n\n"
+    keyboard = [["Back to Menu"]]
+    reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True, resize_keyboard=True)
+    await update.message.reply_text(response, reply_markup=reply_markup, parse_mode="Markdown")
+
     for i, example in enumerate(sample_queries, 1):
         # Send the description
         await update.message.reply_text(
@@ -573,11 +577,6 @@ async def show_sample_queries(update: Update, context: CallbackContext) -> int:
             parse_mode="Markdown"
         )
 
-
-    keyboard = [["Back to Menu"]]
-    reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True, resize_keyboard=True)
-
-    await update.message.reply_text(response, reply_markup=reply_markup, parse_mode="Markdown")
     return CHOOSING
 
 def main() -> None:
