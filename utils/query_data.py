@@ -18,6 +18,22 @@ db_config = {
     'database': os.getenv('DB_NAME')      # Database name
 }
 
+def test_database_connections():
+    """Test both database connections and print results."""
+    # Test MySQL
+    try:
+        mysql_tables = get_mysql_tables()
+        print(f"MySQL Connection Successful. Tables found: {list(mysql_tables.keys())}")
+    except Exception as e:
+        print(f"MySQL Connection Error: {str(e)}")
+
+    # Test MongoDB
+    try:
+        mongo_collections = get_mongodb_collections()
+        print(f"MongoDB Connection Successful. Collections found: {list(mongo_collections.keys())}")
+    except Exception as e:
+        print(f"MongoDB Connection Error: {str(e)}")
+
 # Function to get MongoDB collections
 def get_mongodb_collections():
     collections = mongo_db.list_collection_names()

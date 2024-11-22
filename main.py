@@ -8,7 +8,7 @@ from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import Application, CommandHandler, MessageHandler, CallbackContext, ConversationHandler, filters
 
 from utils.data_processing import upload_json_to_mongodb, upload_csv_to_mysql
-from utils.query_data import get_mysql_tables, get_mongodb_collections, format_nested_fields
+from utils.query_data import test_database_connections, get_mysql_tables, get_mongodb_collections, format_nested_fields
 from utils.query_generator import QueryGenerator
 from utils.execute_query import QueryExecutor
 
@@ -617,22 +617,6 @@ def main() -> None:
     
     application.add_handler(conv_handler)
     application.run_polling()
-    
-def test_database_connections():
-    """Test both database connections and print results."""
-    # Test MySQL
-    try:
-        mysql_tables = get_mysql_tables()
-        print(f"MySQL Connection Successful. Tables found: {list(mysql_tables.keys())}")
-    except Exception as e:
-        print(f"MySQL Connection Error: {str(e)}")
-
-    # Test MongoDB
-    try:
-        mongo_collections = get_mongodb_collections()
-        print(f"MongoDB Connection Successful. Collections found: {list(mongo_collections.keys())}")
-    except Exception as e:
-        print(f"MongoDB Connection Error: {str(e)}")
 
 if __name__ == '__main__':
     test_database_connections()
