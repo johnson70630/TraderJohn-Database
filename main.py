@@ -8,9 +8,10 @@ from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import Application, CommandHandler, MessageHandler, CallbackContext, ConversationHandler, filters
 
 from utils.data_processing import upload_json_to_mongodb, upload_csv_to_mysql
-from utils.query_data import test_database_connections, get_mysql_tables, get_mongodb_collections, format_nested_fields
+from utils.query_data import test_database_connections, get_mysql_tables, get_mongodb_collections
 from utils.query_generator import QueryGenerator
 from utils.execute_query import QueryExecutor
+from utils.format import format_nested_fields
 
 # Enable logging
 logging.basicConfig(
@@ -505,27 +506,27 @@ async def show_sample_queries(update: Update, context: CallbackContext) -> int:
         # MySQL Examples
         {
             "type": "MySQL",
-            "description": "Retrieve all orders where the price is greater than 100.",
-            "query": "SELECT * FROM orders WHERE price > 100;",
-            "output": "OrderID | Price\n12345   | 120\n12346   | 150"
+            "description": "Retrieve all movies released after the year 2000.",
+            "query": "SELECT movie, year_released FROM pixar_movies WHERE year_released > 2000;",
+            "output": "Movie           | Year Released\nFinding Nemo   | 2003\nThe Incredibles | 2004"
         },
         {
             "type": "MySQL",
-            "description": "Calculate the total spending for each customer.",
-            "query": "SELECT customer_id, SUM(total_spent) FROM customers GROUP BY customer_id;",
-            "output": "CustomerID | Total_Spent\nC001       | 5000\nC002       | 4500"
+            "description": "Find the top 5 movies with the highest Rotten Tomatoes ratings.",
+            "query": "SELECT movie, rotten_tomatoes_rating FROM pixar_movies ORDER BY rotten_tomatoes_rating DESC LIMIT 5;",
+            "output": "Movie           | Rotten Tomatoes Rating\nToy Story       | 100%\nFinding Nemo    | 99%"
         },
         {
             "type": "MySQL",
-            "description": "Find the average price of all products.",
-            "query": "SELECT AVG(price) FROM products;",
-            "output": "Average Price: 75.5"
+            "description": "Calculate the average IMDb rating of all Pixar movies.",
+            "query": "SELECT AVG(imdb_rating) AS average_rating FROM pixar_movies;",
+            "output": "Average IMDb Rating\n8.1"
         },
         {
             "type": "MySQL",
-            "description": "Count the number of orders placed by each customer.",
-            "query": "SELECT customer_id, COUNT(order_id) FROM orders GROUP BY customer_id;",
-            "output": "CustomerID | OrderCount\nC001       | 5\nC002       | 3"
+            "description": "List all movies directed by 'John Lasseter'.",
+            "query": "SELECT movie FROM pixar_movies WHERE director = 'John Lasseter';",
+            "output": "Movie\nToy Story\nA Bug's Life"
         },
         # MongoDB Examples
         {

@@ -80,29 +80,3 @@ def get_mysql_tables():
     cursor.close()
     connection.close()
     return mysql_details
-
-
-def format_nested_fields(fields, indent=2):
-    """
-    Recursively formats nested fields for display, handling dictionaries and lists.
-    :param fields: The fields to format (can be a dict, list, or primitive type).
-    :param indent: The indentation level for nested structures.
-    :return: A formatted string representation of the fields.
-    """
-    formatted = ""
-    spacer = " " * indent  # Indentation for nested fields
-
-    if isinstance(fields, dict):
-        for key, value in fields.items():
-            formatted += f"{spacer}• {key}:"
-            if isinstance(value, (dict, list)):
-                formatted += "\n" + format_nested_fields(value, indent + 2)
-            else:
-                formatted += f" {value}\n"
-    elif isinstance(fields, list):
-        for item in fields:
-            formatted += f"{spacer}- {format_nested_fields(item, indent + 2)}\n"
-    else:
-        formatted += f"{fields}"
-
-    return formatted

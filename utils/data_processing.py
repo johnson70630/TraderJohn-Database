@@ -4,6 +4,7 @@ import dotenv
 from mysql import connector
 import pandas as pd
 from pymongo import MongoClient
+from .format import infer_mysql_data_type
 
 dotenv.load_dotenv()
 
@@ -57,7 +58,7 @@ def upload_json_to_mongodb(file_path: str, collection_name: str, batch_size: int
 
 def upload_csv_to_mysql(file_path: str, table_name: str = 'uploaded_data') -> None:
     """
-    Reads a CSV file and uploads its content to an AWS RDS MySQL database.
+    Reads a CSV file and uploads its content to an AWS RDS MySQL database with inferred data types.
     :param file_path: Path to the CSV file.
     :param table_name: Name of the MySQL table to store data.
     """
@@ -68,9 +69,14 @@ def upload_csv_to_mysql(file_path: str, table_name: str = 'uploaded_data') -> No
     connection = connector.connect(**db_config)
     cursor = connection.cursor()
 
-    # Create table if it doesn't exist, based on the DataFrame columns
-    columns = ', '.join([f"{col} VARCHAR(255)" for col in df.columns])  # Adjust data types as needed
-    create_table_query = f"CREATE TABLE IF NOT EXISTS {table_name} ({columns});"
+    # Infer column data types
+    columns_with_types = [
+        f"{col} {infer_mysql_data_type(df[col])}" for col in df.columns
+    ]
+    columns_definition = ', '.join(columns_with_types)
+
+    # Create table if it doesn't exist
+    create_table_query = f"CREATE TABLE IF NOT EXISTS {table_name} ({columns_definition});"
     cursor.execute(create_table_query)
 
     # Insert data row by row
