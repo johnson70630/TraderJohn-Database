@@ -6,10 +6,13 @@ from typing import Dict, List, Tuple, Any, Optional, Union
 import re
 import logging
 
+# Setup logging properly
+logger = logging.getLogger(__name__)
+
 class QueryGenerator:
     def __init__(self):
         # Download required NLTK data
-        for package in ['punkt', 'averaged_perceptron_tagger', 'stopwords', 'wordnet', 'punkt_tab', 'averaged_perceptron_tagger_eng']:
+        for package in ['punkt', 'averaged_perceptron_tagger', 'stopwords', 'wordnet']:
             try:
                 nltk.download(package, quiet=True)
             except Exception as e:
@@ -70,27 +73,33 @@ class QueryGenerator:
     def _extract_table_name(self, tokens: List[str]) -> Optional[str]:
         """Extract table name from tokens."""
         text = ' '.join(tokens)
-        # Common patterns for table references
+        logger.info(f"Extracting table name from: {text}")
+        
+        # Patterns for table references, updated to handle underscores
         patterns = [
-            r'from\s+([a-zA-Z_]\w*)',
-            r'in\s+([a-zA-Z_]\w*)\s+table',
-            r'from\s+the\s+([a-zA-Z_]\w*)',
-            r'in\s+([a-zA-Z_]\w*)'
+            r'from\s+([a-zA-Z][a-zA-Z0-9_]*)',
+            r'in\s+([a-zA-Z][a-zA-Z0-9_]*)\s*(?:table)?',
+            r'from\s+the\s+([a-zA-Z][a-zA-Z0-9_]*)',
         ]
         
+        # Try each pattern
         for pattern in patterns:
             match = re.search(pattern, text)
             if match:
-                return match.group(1)
-                
-        # Look for plural nouns that might be table names
-        tagged = pos_tag(tokens)
-        for word, tag in tagged:
-            if tag in ['NNS', 'NNPS'] and word not in self.stop_words:
-                return word
-        
-        return None
+                table_name = match.group(1)
+                logger.info(f"Found table name via pattern '{pattern}': {table_name}")
+                return table_name
 
+        # Look for words containing underscore
+        words = text.split()
+        for word in words:
+            if '_' in word and not word.startswith('_'):
+                logger.info(f"Found table name via underscore check: {word}")
+                return word
+
+        logger.info("No table name found")
+        return None
+    
     def _extract_conditions(self, tokens: List[str]) -> List[Tuple[str, str, str]]:
         """Extract WHERE conditions from tokens."""
         conditions = []
@@ -168,15 +177,16 @@ class QueryGenerator:
             'aggregate': None
         }
 
-        # Handle various query patterns
+        # Updated patterns to handle underscore and specific query formats
+        # In QueryGenerator.extract_query_components()
         patterns = [
-            # "show all _id in country" or "show all _id from country"
+            # Match "find X in Y" pattern
+            r'^find\s+(\w+)\s+in\s+([a-zA-Z][a-zA-Z0-9_]*)$',
+            # Existing patterns...
+            r'^find\s+all\s+(\w+)\s+from\s+([a-zA-Z][a-zA-Z0-9_]*)$',
             r'^show\s+all\s+(\w+)(?:\s+in|\s+from)\s+(\w+)$',
-            # "find all cars"
             r'^find\s+all\s+(\w+)$',
-            # "cars find all"
             r'^(\w+)\s+find\s+all$',
-            # Simple name
             r'^(\w+)$'
         ]
 
@@ -186,36 +196,31 @@ class QueryGenerator:
                 logger.info(f"Matched pattern: {pattern}")
                 logger.info(f"Match groups: {match.groups()}")
                 
-                if pattern.endswith('(\w+)$'):  # Simple name pattern
-                    components['from'] = match.group(1)
-                    break
-                elif 'in' in pattern or 'from' in pattern:
-                    field = match.group(1)
+                if 'find\s+(\w+)\s+in' in pattern:  # New pattern for "find X in Y"
+                    column = match.group(1)
                     table = match.group(2)
-                    components['select'] = [field]
-                    components['from'] = table
-                    break
-                else:  # "find all" patterns
-                    table = match.group(1)
+                    components['select'] = [column if column != 'movies' else '*']
                     components['from'] = table
                     break
 
-        # If no pattern matched, try original parsing
+        # If no pattern matched, try extracting components
         if not components['from']:
-            # Extract components as before
-            aggregate_info = self._identify_aggregate_function(tokens)
-            if aggregate_info:
-                components['aggregate'] = aggregate_info
-                components['select'] = [f"{aggregate_info[0]}({aggregate_info[1]})"]
-
+            logger.info("No pattern matched, trying component extraction")
             components['from'] = self._extract_table_name(tokens)
-            components['where'] = self._extract_conditions(tokens)
-            components['order_by'] = self._extract_order_by(tokens)
-            components['group_by'] = self._extract_group_by(tokens)
-            components['limit'] = self._extract_limit(tokens)
+            
+            # Extract column if it exists
+            words = cleaned_text.split()
+            if len(words) >= 3 and 'all' in words:
+                try:
+                    col_idx = words.index('all') + 1
+                    if col_idx < len(words) and words[col_idx] != 'from':
+                        components['select'] = [words[col_idx]]
+                except ValueError:
+                    pass
 
-        logger.info(f"Generated components: {components}")
+        logger.info(f"Final components: {components}")
         return components
+
 
     def generate_sql_query(self, components: Dict[str, Any]) -> str:
         """Generate SQL query from components."""

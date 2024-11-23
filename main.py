@@ -13,11 +13,16 @@ from utils.query_generator import QueryGenerator
 from utils.execute_query import QueryExecutor
 from utils.format import format_nested_fields
 
-# Enable logging
+# Configure logging
 logging.basicConfig(
+    level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO
+    handlers=[
+        logging.StreamHandler()
+    ]
 )
+
+# Create logger for this module
 logger = logging.getLogger(__name__)
 
 # Load environment variables
@@ -401,35 +406,46 @@ async def handle_query(update: Update, context: CallbackContext) -> int:
 
         # Handle MySQL Query
         else:  # MySQL
+            # REPLACE THIS ENTIRE SECTION with the new code:
             tables = context.user_data.get('mysql_tables', set())
-            
-            # Parse query patterns
-            query_patterns = {
-                'find_all': r'^find\s+all\s+(\w+)$',
-                'show_all_field': r'^show\s+all\s+(\w+)\s+(?:in|from)\s+(\w+)$',
-                'table_name': r'^(\w+)$'
-            }
-            
-            # Try to match each pattern
-            sql_query = None
-            target = None
-            
-            for pattern_name, pattern in query_patterns.items():
-                match = re.match(pattern, user_input.lower())
-                if match:
-                    if pattern_name == 'find_all':
-                        target = match.group(1)
+    
+            # First check if input is just a table name
+            if user_input.lower() in tables:
+                target = user_input.lower()
+                sql_query = f"SELECT * FROM {target} LIMIT 10"
+            else:
+                # Extract table name and columns from complex queries
+                words = user_input.lower().split()
+                target = None
+                columns = []
+                
+                # Try to find "in table_name" pattern
+                if 'in' in words:
+                    idx = words.index('in')
+                    target = words[idx + 1]  # Get word after "in"
+                    
+                    # Get columns (everything between "find" and "in")
+                    if 'find' in words:
+                        start_idx = words.index('find') + 1
+                        columns_str = ' '.join(words[start_idx:idx])
+                        # Split on 'and' and clean up each column name
+                        columns = [col.strip() for col in columns_str.split('and')]
+
+                # If we found a direct pattern
+                if target and target in tables:
+                    if columns:
+                        # Join columns with commas for the SELECT clause
+                        columns_sql = ', '.join(col for col in columns)
+                        sql_query = f"SELECT {columns_sql} FROM {target} LIMIT 10"
+                    else:
                         sql_query = f"SELECT * FROM {target} LIMIT 10"
-                    elif pattern_name == 'show_all_field':
-                        field = match.group(1)
-                        target = match.group(2)
-                        sql_query = f"SELECT {field} FROM {target} LIMIT 10"
-                    elif pattern_name == 'table_name':
-                        target = match.group(1)
-                        sql_query = f"SELECT * FROM {target} LIMIT 10"
-                    break
-            
-            # Validate table name
+                else:
+                    # Fall back to QueryGenerator if direct pattern didn't work
+                    query_components = query_generator.extract_query_components(user_input)
+                    target = query_components.get('from')
+                    sql_query = query_generator.generate_sql_query(query_components)
+
+            # Keep the rest of the MySQL handling code (validation and execution)
             if not target or target not in tables:
                 await update.message.reply_text(
                     f"Please specify a valid table name.\n\n"
@@ -491,6 +507,8 @@ async def handle_query(update: Update, context: CallbackContext) -> int:
         logger.error(f"Query error: {str(e)}", exc_info=True)
         await update.message.reply_text(f"Error processing query: {str(e)}")
         return QUERY_DATA
+
+        
     
 async def cancel(update: Update, context: CallbackContext) -> int:
     """Cancel conversation."""
