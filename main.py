@@ -13,11 +13,8 @@ from utils.query_generator import QueryGenerator
 from utils.execute_query import QueryExecutor
 from utils.format import format_nested_fields
 
-<<<<<<< HEAD
 from typing import Dict, List, Tuple, Any, Optional, Union
 
-=======
->>>>>>> origin/main
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -398,56 +395,11 @@ async def handle_query(update: Update, context: CallbackContext) -> int:
             return QUERY_DATA
 
         # Handle MySQL Query
-<<<<<<< HEAD
         if selected_db == "Query MySQL":
             # Extract query components using the available tables
             query_components = query_generator.extract_query_components(user_input, available_tables)
             
             if not query_components['from']:
-=======
-        else:  # MySQL
-            # REPLACE THIS ENTIRE SECTION with the new code:
-            tables = context.user_data.get('mysql_tables', set())
-    
-            # First check if input is just a table name
-            if user_input.lower() in tables:
-                target = user_input.lower()
-                sql_query = f"SELECT * FROM {target} LIMIT 10"
-            else:
-                # Extract table name and columns from complex queries
-                words = user_input.lower().split()
-                target = None
-                columns = []
-                
-                # Try to find "in table_name" pattern
-                if 'in' in words:
-                    idx = words.index('in')
-                    target = words[idx + 1]  # Get word after "in"
-                    
-                    # Get columns (everything between "find" and "in")
-                    if 'find' in words:
-                        start_idx = words.index('find') + 1
-                        columns_str = ' '.join(words[start_idx:idx])
-                        # Split on 'and' and clean up each column name
-                        columns = [col.strip() for col in columns_str.split('and')]
-
-                # If we found a direct pattern
-                if target and target in tables:
-                    if columns:
-                        # Join columns with commas for the SELECT clause
-                        columns_sql = ', '.join(col for col in columns)
-                        sql_query = f"SELECT {columns_sql} FROM {target} LIMIT 10"
-                    else:
-                        sql_query = f"SELECT * FROM {target} LIMIT 10"
-                else:
-                    # Fall back to QueryGenerator if direct pattern didn't work
-                    query_components = query_generator.extract_query_components(user_input)
-                    target = query_components.get('from')
-                    sql_query = query_generator.generate_sql_query(query_components)
-
-            # Keep the rest of the MySQL handling code (validation and execution)
-            if not target or target not in tables:
->>>>>>> origin/main
                 await update.message.reply_text(
                     f"Please specify a valid table name.\n\n"
                     f"Available tables:\n" +
@@ -482,7 +434,6 @@ async def handle_query(update: Update, context: CallbackContext) -> int:
             return QUERY_DATA
         
     except Exception as e:
-<<<<<<< HEAD
             logger.error(f"Query error: {str(e)}", exc_info=True)
             await update.message.reply_text(f"Error processing query: {str(e)}")
             return QUERY_DATA
@@ -524,13 +475,6 @@ async def process_and_send_results(update: Update, results: List[Dict[str, Any]]
         # Send this column chunk
         chunk_message = "```\n" + "\n".join(formatted_rows) + "\n```"
         await update.message.reply_text(chunk_message, parse_mode="Markdown")
-=======
-        logger.error(f"Query error: {str(e)}", exc_info=True)
-        await update.message.reply_text(f"Error processing query: {str(e)}")
-        return QUERY_DATA
-
-        
->>>>>>> origin/main
     
     if len(results) > 10:
         await update.message.reply_text(f"Showing first 10 of {len(results)} results")
