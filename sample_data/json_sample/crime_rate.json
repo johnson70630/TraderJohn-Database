@@ -1,0 +1,1784 @@
+[
+    {
+      "country": "India",
+      "crimeRateByCountry_crimeIndex": 44.4,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.75,
+      "CrimeRate_CriminalMarketsScore": 6.7,
+      "CrimeRate_CriminalActorsScore": 4.8,
+      "CrimeRate_ResilienceScore": 5.42,
+      "CrimeRateSafetyIndex": 55.6
+    },
+    {
+      "country": "China",
+      "crimeRateByCountry_crimeIndex": 60.8,
+      "CrimeRate_OverallCriminalityScoreGOCI": 6.37,
+      "CrimeRate_CriminalMarketsScore": 6.53,
+      "CrimeRate_CriminalActorsScore": 6.2,
+      "CrimeRate_ResilienceScore": 5.67,
+      "CrimeRateSafetyIndex": 39.2
+    },
+    {
+      "country": "United States",
+      "crimeRateByCountry_crimeIndex": 49.2,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.67,
+      "CrimeRate_CriminalMarketsScore": 5.83,
+      "CrimeRate_CriminalActorsScore": 5.5,
+      "CrimeRate_ResilienceScore": 7.13,
+      "CrimeRateSafetyIndex": 50.8
+    },
+    {
+      "country": "Indonesia",
+      "crimeRateByCountry_crimeIndex": 45.9,
+      "CrimeRate_OverallCriminalityScoreGOCI": 6.85,
+      "CrimeRate_CriminalMarketsScore": 6.6,
+      "CrimeRate_CriminalActorsScore": 7.1,
+      "CrimeRate_ResilienceScore": 4.25,
+      "CrimeRateSafetyIndex": 54.1
+    },
+    {
+      "country": "Pakistan",
+      "crimeRateByCountry_crimeIndex": 42.8,
+      "CrimeRate_OverallCriminalityScoreGOCI": 6.03,
+      "CrimeRate_CriminalMarketsScore": 6.27,
+      "CrimeRate_CriminalActorsScore": 5.8,
+      "CrimeRate_ResilienceScore": 3.96,
+      "CrimeRateSafetyIndex": 57.2
+    },
+    {
+      "country": "Nigeria",
+      "crimeRateByCountry_crimeIndex": 65.8,
+      "CrimeRate_OverallCriminalityScoreGOCI": 7.28,
+      "CrimeRate_CriminalMarketsScore": 7.37,
+      "CrimeRate_CriminalActorsScore": 7.2,
+      "CrimeRate_ResilienceScore": 5.79,
+      "CrimeRateSafetyIndex": 34.2
+    },
+    {
+      "country": "Brazil",
+      "crimeRateByCountry_crimeIndex": 66.1,
+      "CrimeRate_OverallCriminalityScoreGOCI": 6.77,
+      "CrimeRate_CriminalMarketsScore": 6.93,
+      "CrimeRate_CriminalActorsScore": 6.6,
+      "CrimeRate_ResilienceScore": 4.92,
+      "CrimeRateSafetyIndex": 33.9
+    },
+    {
+      "country": "Bangladesh",
+      "crimeRateByCountry_crimeIndex": 62.5,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.12,
+      "CrimeRate_CriminalMarketsScore": 5.03,
+      "CrimeRate_CriminalActorsScore": 5.2,
+      "CrimeRate_ResilienceScore": 4.42,
+      "CrimeRateSafetyIndex": 37.5
+    },
+    {
+      "country": "Russia",
+      "crimeRateByCountry_crimeIndex": 39.7,
+      "CrimeRate_OverallCriminalityScoreGOCI": 6.87,
+      "CrimeRate_CriminalMarketsScore": 6.83,
+      "CrimeRate_CriminalActorsScore": 6.9,
+      "CrimeRate_ResilienceScore": 3.79,
+      "CrimeRateSafetyIndex": 60.3
+    },
+    {
+      "country": "Ethiopia",
+      "crimeRateByCountry_crimeIndex": 51.4,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.68,
+      "CrimeRate_CriminalMarketsScore": 6.07,
+      "CrimeRate_CriminalActorsScore": 5.3,
+      "CrimeRate_ResilienceScore": 4.75,
+      "CrimeRateSafetyIndex": 48.6
+    },
+    {
+      "country": "Mexico",
+      "crimeRateByCountry_crimeIndex": 54.1,
+      "CrimeRate_OverallCriminalityScoreGOCI": 7.57,
+      "CrimeRate_CriminalMarketsScore": 8.13,
+      "CrimeRate_CriminalActorsScore": 7,
+      "CrimeRate_ResilienceScore": 4.21,
+      "CrimeRateSafetyIndex": 45.9
+    },
+    {
+      "country": "Japan",
+      "crimeRateByCountry_crimeIndex": 22.9,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.28,
+      "CrimeRate_CriminalMarketsScore": 3.87,
+      "CrimeRate_CriminalActorsScore": 4.7,
+      "CrimeRate_ResilienceScore": 7.38,
+      "CrimeRateSafetyIndex": 77.1
+    },
+    {
+      "country": "Egypt",
+      "crimeRateByCountry_crimeIndex": 47,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.05,
+      "CrimeRate_CriminalMarketsScore": 5.1,
+      "CrimeRate_CriminalActorsScore": 5,
+      "CrimeRate_ResilienceScore": 3.83,
+      "CrimeRateSafetyIndex": 53
+    },
+    {
+      "country": "Philippines",
+      "crimeRateByCountry_crimeIndex": 42.6,
+      "CrimeRate_OverallCriminalityScoreGOCI": 6.63,
+      "CrimeRate_CriminalMarketsScore": 6.57,
+      "CrimeRate_CriminalActorsScore": 6.7,
+      "CrimeRate_ResilienceScore": 4.21,
+      "CrimeRateSafetyIndex": 57.4
+    },
+    {
+      "country": "DR Congo",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 7.35,
+      "CrimeRate_CriminalMarketsScore": 6.2,
+      "CrimeRate_CriminalActorsScore": 8.5,
+      "CrimeRate_ResilienceScore": 2.38,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Vietnam",
+      "crimeRateByCountry_crimeIndex": 44.1,
+      "CrimeRate_OverallCriminalityScoreGOCI": 6.55,
+      "CrimeRate_CriminalMarketsScore": 6.5,
+      "CrimeRate_CriminalActorsScore": 6.6,
+      "CrimeRate_ResilienceScore": 4.79,
+      "CrimeRateSafetyIndex": 55.9
+    },
+    {
+      "country": "Iran",
+      "crimeRateByCountry_crimeIndex": 49.8,
+      "CrimeRate_OverallCriminalityScoreGOCI": 7.03,
+      "CrimeRate_CriminalMarketsScore": 7.37,
+      "CrimeRate_CriminalActorsScore": 6.7,
+      "CrimeRate_ResilienceScore": 3.13,
+      "CrimeRateSafetyIndex": 50.2
+    },
+    {
+      "country": "Turkey",
+      "crimeRateByCountry_crimeIndex": 40.2,
+      "CrimeRate_OverallCriminalityScoreGOCI": 7.03,
+      "CrimeRate_CriminalMarketsScore": 6.77,
+      "CrimeRate_CriminalActorsScore": 7.3,
+      "CrimeRate_ResilienceScore": 3.38,
+      "CrimeRateSafetyIndex": 59.8
+    },
+    {
+      "country": "Germany",
+      "crimeRateByCountry_crimeIndex": 38,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.33,
+      "CrimeRate_CriminalMarketsScore": 5.47,
+      "CrimeRate_CriminalActorsScore": 5.2,
+      "CrimeRate_ResilienceScore": 7.5,
+      "CrimeRateSafetyIndex": 62
+    },
+    {
+      "country": "Thailand",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 6.18,
+      "CrimeRate_CriminalMarketsScore": 6.77,
+      "CrimeRate_CriminalActorsScore": 5.6,
+      "CrimeRate_ResilienceScore": 4.79,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "United Kingdom",
+      "crimeRateByCountry_crimeIndex": 46.9,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.75,
+      "CrimeRate_CriminalMarketsScore": 5.5,
+      "CrimeRate_CriminalActorsScore": 6,
+      "CrimeRate_ResilienceScore": 7.54,
+      "CrimeRateSafetyIndex": 53.1
+    },
+    {
+      "country": "Tanzania",
+      "crimeRateByCountry_crimeIndex": 38.3,
+      "CrimeRate_OverallCriminalityScoreGOCI": 6.2,
+      "CrimeRate_CriminalMarketsScore": 6.4,
+      "CrimeRate_CriminalActorsScore": 6,
+      "CrimeRate_ResilienceScore": 4.13,
+      "CrimeRateSafetyIndex": 61.7
+    },
+    {
+      "country": "France",
+      "crimeRateByCountry_crimeIndex": 54.6,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.82,
+      "CrimeRate_CriminalMarketsScore": 5.93,
+      "CrimeRate_CriminalActorsScore": 5.7,
+      "CrimeRate_ResilienceScore": 6.96,
+      "CrimeRateSafetyIndex": 45.4
+    },
+    {
+      "country": "South Africa",
+      "crimeRateByCountry_crimeIndex": 75.5,
+      "CrimeRate_OverallCriminalityScoreGOCI": 7.18,
+      "CrimeRate_CriminalMarketsScore": 6.87,
+      "CrimeRate_CriminalActorsScore": 7.5,
+      "CrimeRate_ResilienceScore": 5.63,
+      "CrimeRateSafetyIndex": 24.5
+    },
+    {
+      "country": "Italy",
+      "crimeRateByCountry_crimeIndex": 47.3,
+      "CrimeRate_OverallCriminalityScoreGOCI": 6.22,
+      "CrimeRate_CriminalMarketsScore": 5.73,
+      "CrimeRate_CriminalActorsScore": 6.7,
+      "CrimeRate_ResilienceScore": 6.46,
+      "CrimeRateSafetyIndex": 52.7
+    },
+    {
+      "country": "Kenya",
+      "crimeRateByCountry_crimeIndex": 56.8,
+      "CrimeRate_OverallCriminalityScoreGOCI": 7.02,
+      "CrimeRate_CriminalMarketsScore": 6.93,
+      "CrimeRate_CriminalActorsScore": 7.1,
+      "CrimeRate_ResilienceScore": 5.33,
+      "CrimeRateSafetyIndex": 43.2
+    },
+    {
+      "country": "Myanmar",
+      "crimeRateByCountry_crimeIndex": 50,
+      "CrimeRate_OverallCriminalityScoreGOCI": 8.15,
+      "CrimeRate_CriminalMarketsScore": 7.7,
+      "CrimeRate_CriminalActorsScore": 8.6,
+      "CrimeRate_ResilienceScore": 1.63,
+      "CrimeRateSafetyIndex": 50
+    },
+    {
+      "country": "Colombia",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 7.75,
+      "CrimeRate_CriminalMarketsScore": 7.3,
+      "CrimeRate_CriminalActorsScore": 8.2,
+      "CrimeRate_ResilienceScore": 5.63,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "South Korea",
+      "crimeRateByCountry_crimeIndex": 25.3,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.43,
+      "CrimeRate_CriminalMarketsScore": 3.57,
+      "CrimeRate_CriminalActorsScore": 5.3,
+      "CrimeRate_ResilienceScore": 8.08,
+      "CrimeRateSafetyIndex": 74.7
+    },
+    {
+      "country": "Sudan",
+      "crimeRateByCountry_crimeIndex": 45.5,
+      "CrimeRate_OverallCriminalityScoreGOCI": 6.37,
+      "CrimeRate_CriminalMarketsScore": 5.23,
+      "CrimeRate_CriminalActorsScore": 7.5,
+      "CrimeRate_ResilienceScore": 2.71,
+      "CrimeRateSafetyIndex": 54.5
+    },
+    {
+      "country": "Uganda",
+      "crimeRateByCountry_crimeIndex": 55.9,
+      "CrimeRate_OverallCriminalityScoreGOCI": 6.55,
+      "CrimeRate_CriminalMarketsScore": 6.4,
+      "CrimeRate_CriminalActorsScore": 6.7,
+      "CrimeRate_ResilienceScore": 3.88,
+      "CrimeRateSafetyIndex": 44.1
+    },
+    {
+      "country": "Spain",
+      "crimeRateByCountry_crimeIndex": 35.8,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.9,
+      "CrimeRate_CriminalMarketsScore": 5.7,
+      "CrimeRate_CriminalActorsScore": 6.1,
+      "CrimeRate_ResilienceScore": 6.75,
+      "CrimeRateSafetyIndex": 64.2
+    },
+    {
+      "country": "Algeria",
+      "crimeRateByCountry_crimeIndex": 51.4,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.88,
+      "CrimeRate_CriminalMarketsScore": 5.17,
+      "CrimeRate_CriminalActorsScore": 4.6,
+      "CrimeRate_ResilienceScore": 4.38,
+      "CrimeRateSafetyIndex": 48.6
+    },
+    {
+      "country": "Iraq",
+      "crimeRateByCountry_crimeIndex": 46,
+      "CrimeRate_OverallCriminalityScoreGOCI": 7.13,
+      "CrimeRate_CriminalMarketsScore": 6.27,
+      "CrimeRate_CriminalActorsScore": 8,
+      "CrimeRate_ResilienceScore": 3.21,
+      "CrimeRateSafetyIndex": 54
+    },
+    {
+      "country": "Argentina",
+      "crimeRateByCountry_crimeIndex": 64,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5,
+      "CrimeRate_CriminalMarketsScore": 4.5,
+      "CrimeRate_CriminalActorsScore": 5.5,
+      "CrimeRate_ResilienceScore": 5.96,
+      "CrimeRateSafetyIndex": 36
+    },
+    {
+      "country": "Afghanistan",
+      "crimeRateByCountry_crimeIndex": 78.4,
+      "CrimeRate_OverallCriminalityScoreGOCI": 7.1,
+      "CrimeRate_CriminalMarketsScore": 7,
+      "CrimeRate_CriminalActorsScore": 7.2,
+      "CrimeRate_ResilienceScore": 1.5,
+      "CrimeRateSafetyIndex": 21.6
+    },
+    {
+      "country": "Yemen",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 6.57,
+      "CrimeRate_CriminalMarketsScore": 5.63,
+      "CrimeRate_CriminalActorsScore": 7.5,
+      "CrimeRate_ResilienceScore": 1.75,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Canada",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 3.88,
+      "CrimeRate_CriminalMarketsScore": 3.87,
+      "CrimeRate_CriminalActorsScore": 3.9,
+      "CrimeRate_ResilienceScore": 7.21,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Poland",
+      "crimeRateByCountry_crimeIndex": 29.2,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.48,
+      "CrimeRate_CriminalMarketsScore": 4.97,
+      "CrimeRate_CriminalActorsScore": 4,
+      "CrimeRate_ResilienceScore": 5.88,
+      "CrimeRateSafetyIndex": 70.8
+    },
+    {
+      "country": "Morocco",
+      "crimeRateByCountry_crimeIndex": 47.1,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.8,
+      "CrimeRate_CriminalMarketsScore": 5.1,
+      "CrimeRate_CriminalActorsScore": 4.5,
+      "CrimeRate_ResilienceScore": 4.63,
+      "CrimeRateSafetyIndex": 52.9
+    },
+    {
+      "country": "Angola",
+      "crimeRateByCountry_crimeIndex": 65.8,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.58,
+      "CrimeRate_CriminalMarketsScore": 5.17,
+      "CrimeRate_CriminalActorsScore": 6,
+      "CrimeRate_ResilienceScore": 4.5,
+      "CrimeRateSafetyIndex": 34.2
+    },
+    {
+      "country": "Ukraine",
+      "crimeRateByCountry_crimeIndex": 46.8,
+      "CrimeRate_OverallCriminalityScoreGOCI": 6.48,
+      "CrimeRate_CriminalMarketsScore": 6.27,
+      "CrimeRate_CriminalActorsScore": 6.7,
+      "CrimeRate_ResilienceScore": 4.54,
+      "CrimeRateSafetyIndex": 53.2
+    },
+    {
+      "country": "Uzbekistan",
+      "crimeRateByCountry_crimeIndex": 31.3,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.95,
+      "CrimeRate_CriminalMarketsScore": 4.6,
+      "CrimeRate_CriminalActorsScore": 5.3,
+      "CrimeRate_ResilienceScore": 3.88,
+      "CrimeRateSafetyIndex": 68.7
+    },
+    {
+      "country": "Malaysia",
+      "crimeRateByCountry_crimeIndex": 51.6,
+      "CrimeRate_OverallCriminalityScoreGOCI": 6.23,
+      "CrimeRate_CriminalMarketsScore": 6.67,
+      "CrimeRate_CriminalActorsScore": 5.8,
+      "CrimeRate_ResilienceScore": 5.92,
+      "CrimeRateSafetyIndex": 48.4
+    },
+    {
+      "country": "Mozambique",
+      "crimeRateByCountry_crimeIndex": 63.7,
+      "CrimeRate_OverallCriminalityScoreGOCI": 6.2,
+      "CrimeRate_CriminalMarketsScore": 5.9,
+      "CrimeRate_CriminalActorsScore": 6.5,
+      "CrimeRate_ResilienceScore": 3.29,
+      "CrimeRateSafetyIndex": 36.3
+    },
+    {
+      "country": "Ghana",
+      "crimeRateByCountry_crimeIndex": 44.1,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.8,
+      "CrimeRate_CriminalMarketsScore": 6,
+      "CrimeRate_CriminalActorsScore": 5.6,
+      "CrimeRate_ResilienceScore": 5.46,
+      "CrimeRateSafetyIndex": 55.9
+    },
+    {
+      "country": "Peru",
+      "crimeRateByCountry_crimeIndex": 67.5,
+      "CrimeRate_OverallCriminalityScoreGOCI": 6.4,
+      "CrimeRate_CriminalMarketsScore": 6.2,
+      "CrimeRate_CriminalActorsScore": 6.6,
+      "CrimeRate_ResilienceScore": 4.38,
+      "CrimeRateSafetyIndex": 32.5
+    },
+    {
+      "country": "Saudi Arabia",
+      "crimeRateByCountry_crimeIndex": 24.3,
+      "CrimeRate_OverallCriminalityScoreGOCI": 6.23,
+      "CrimeRate_CriminalMarketsScore": 6.57,
+      "CrimeRate_CriminalActorsScore": 5.9,
+      "CrimeRate_ResilienceScore": 4,
+      "CrimeRateSafetyIndex": 75.7
+    },
+    {
+      "country": "Madagascar",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.58,
+      "CrimeRate_CriminalMarketsScore": 5.27,
+      "CrimeRate_CriminalActorsScore": 5.9,
+      "CrimeRate_ResilienceScore": 3.33,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Ivory Coast",
+      "crimeRateByCountry_crimeIndex": 57.5,
+      "CrimeRate_OverallCriminalityScoreGOCI": 6.02,
+      "CrimeRate_CriminalMarketsScore": 5.93,
+      "CrimeRate_CriminalActorsScore": 6.1,
+      "CrimeRate_ResilienceScore": 5.13,
+      "CrimeRateSafetyIndex": 42.5
+    },
+    {
+      "country": "Nepal",
+      "crimeRateByCountry_crimeIndex": 37.5,
+      "CrimeRate_OverallCriminalityScoreGOCI": 6.57,
+      "CrimeRate_CriminalMarketsScore": 6.03,
+      "CrimeRate_CriminalActorsScore": 7.1,
+      "CrimeRate_ResilienceScore": 4,
+      "CrimeRateSafetyIndex": 62.5
+    },
+    {
+      "country": "Cameroon",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 6.27,
+      "CrimeRate_CriminalMarketsScore": 6.23,
+      "CrimeRate_CriminalActorsScore": 6.3,
+      "CrimeRate_ResilienceScore": 3.17,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Venezuela",
+      "crimeRateByCountry_crimeIndex": 82.1,
+      "CrimeRate_OverallCriminalityScoreGOCI": 6.72,
+      "CrimeRate_CriminalMarketsScore": 6.03,
+      "CrimeRate_CriminalActorsScore": 7.4,
+      "CrimeRate_ResilienceScore": 1.88,
+      "CrimeRateSafetyIndex": 17.9
+    },
+    {
+      "country": "Niger",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.7,
+      "CrimeRate_CriminalMarketsScore": 5.7,
+      "CrimeRate_CriminalActorsScore": 5.7,
+      "CrimeRate_ResilienceScore": 3.46,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Australia",
+      "crimeRateByCountry_crimeIndex": 46.7,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4,
+      "CrimeRate_CriminalMarketsScore": 4.3,
+      "CrimeRate_CriminalActorsScore": 3.7,
+      "CrimeRate_ResilienceScore": 7.38,
+      "CrimeRateSafetyIndex": 53.3
+    },
+    {
+      "country": "North Korea",
+      "crimeRateByCountry_crimeIndex": 50.7,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.82,
+      "CrimeRate_CriminalMarketsScore": 5.73,
+      "CrimeRate_CriminalActorsScore": 3.9,
+      "CrimeRate_ResilienceScore": 1.79,
+      "CrimeRateSafetyIndex": 49.3
+    },
+    {
+      "country": "Syria",
+      "crimeRateByCountry_crimeIndex": 69.1,
+      "CrimeRate_OverallCriminalityScoreGOCI": 7.07,
+      "CrimeRate_CriminalMarketsScore": 6.43,
+      "CrimeRate_CriminalActorsScore": 7.7,
+      "CrimeRate_ResilienceScore": 1.92,
+      "CrimeRateSafetyIndex": 30.9
+    },
+    {
+      "country": "Mali",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.93,
+      "CrimeRate_CriminalMarketsScore": 6.47,
+      "CrimeRate_CriminalActorsScore": 5.4,
+      "CrimeRate_ResilienceScore": 2.38,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Burkina Faso",
+      "crimeRateByCountry_crimeIndex": 53,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.92,
+      "CrimeRate_CriminalMarketsScore": 5.83,
+      "CrimeRate_CriminalActorsScore": 6,
+      "CrimeRate_ResilienceScore": 3.46,
+      "CrimeRateSafetyIndex": 47
+    },
+    {
+      "country": "Taiwan",
+      "crimeRateByCountry_crimeIndex": 16.1,
+      "CrimeRate_OverallCriminalityScoreGOCI": null,
+      "CrimeRate_CriminalMarketsScore": null,
+      "CrimeRate_CriminalActorsScore": null,
+      "CrimeRate_ResilienceScore": null,
+      "CrimeRateSafetyIndex": 83.9
+    },
+    {
+      "country": "Sri Lanka",
+      "crimeRateByCountry_crimeIndex": 42.2,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.92,
+      "CrimeRate_CriminalMarketsScore": 4.83,
+      "CrimeRate_CriminalActorsScore": 5,
+      "CrimeRate_ResilienceScore": 3.42,
+      "CrimeRateSafetyIndex": 57.8
+    },
+    {
+      "country": "Malawi",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.48,
+      "CrimeRate_CriminalMarketsScore": 4.77,
+      "CrimeRate_CriminalActorsScore": 4.2,
+      "CrimeRate_ResilienceScore": 4.58,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Zambia",
+      "crimeRateByCountry_crimeIndex": 47.9,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.73,
+      "CrimeRate_CriminalMarketsScore": 4.47,
+      "CrimeRate_CriminalActorsScore": 5,
+      "CrimeRate_ResilienceScore": 4.54,
+      "CrimeRateSafetyIndex": 52.1
+    },
+    {
+      "country": "Kazakhstan",
+      "crimeRateByCountry_crimeIndex": 46.4,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.47,
+      "CrimeRate_CriminalMarketsScore": 4.33,
+      "CrimeRate_CriminalActorsScore": 4.6,
+      "CrimeRate_ResilienceScore": 4.54,
+      "CrimeRateSafetyIndex": 53.6
+    },
+    {
+      "country": "Chad",
+      "crimeRateByCountry_crimeIndex": 58.7,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.5,
+      "CrimeRate_CriminalMarketsScore": 5.1,
+      "CrimeRate_CriminalActorsScore": 5.9,
+      "CrimeRate_ResilienceScore": 2.42,
+      "CrimeRateSafetyIndex": 41.3
+    },
+    {
+      "country": "Chile",
+      "crimeRateByCountry_crimeIndex": 25.8,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.18,
+      "CrimeRate_CriminalMarketsScore": 5.07,
+      "CrimeRate_CriminalActorsScore": 5.3,
+      "CrimeRate_ResilienceScore": 6.17,
+      "CrimeRateSafetyIndex": 74.2
+    },
+    {
+      "country": "Romania",
+      "crimeRateByCountry_crimeIndex": 32.8,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.58,
+      "CrimeRate_CriminalMarketsScore": 5.27,
+      "CrimeRate_CriminalActorsScore": 3.9,
+      "CrimeRate_ResilienceScore": 6,
+      "CrimeRateSafetyIndex": 67.2
+    },
+    {
+      "country": "Somalia",
+      "crimeRateByCountry_crimeIndex": 66.7,
+      "CrimeRate_OverallCriminalityScoreGOCI": 6.13,
+      "CrimeRate_CriminalMarketsScore": 5.27,
+      "CrimeRate_CriminalActorsScore": 7,
+      "CrimeRate_ResilienceScore": 1.79,
+      "CrimeRateSafetyIndex": 33.3
+    },
+    {
+      "country": "Senegal",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.52,
+      "CrimeRate_CriminalMarketsScore": 5.53,
+      "CrimeRate_CriminalActorsScore": 5.5,
+      "CrimeRate_ResilienceScore": 5.79,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Guatemala",
+      "crimeRateByCountry_crimeIndex": 60.1,
+      "CrimeRate_OverallCriminalityScoreGOCI": 6.6,
+      "CrimeRate_CriminalMarketsScore": 6.1,
+      "CrimeRate_CriminalActorsScore": 7.1,
+      "CrimeRate_ResilienceScore": 4.08,
+      "CrimeRateSafetyIndex": 39.9
+    },
+    {
+      "country": "Netherlands",
+      "crimeRateByCountry_crimeIndex": 26.2,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.97,
+      "CrimeRate_CriminalMarketsScore": 5.23,
+      "CrimeRate_CriminalActorsScore": 4.7,
+      "CrimeRate_ResilienceScore": 7.46,
+      "CrimeRateSafetyIndex": 73.8
+    },
+    {
+      "country": "Ecuador",
+      "crimeRateByCountry_crimeIndex": 60.7,
+      "CrimeRate_OverallCriminalityScoreGOCI": 7.07,
+      "CrimeRate_CriminalMarketsScore": 6.73,
+      "CrimeRate_CriminalActorsScore": 7.4,
+      "CrimeRate_ResilienceScore": 4.88,
+      "CrimeRateSafetyIndex": 39.3
+    },
+    {
+      "country": "Cambodia",
+      "crimeRateByCountry_crimeIndex": 44.8,
+      "CrimeRate_OverallCriminalityScoreGOCI": 6.85,
+      "CrimeRate_CriminalMarketsScore": 6.7,
+      "CrimeRate_CriminalActorsScore": 7,
+      "CrimeRate_ResilienceScore": 3.63,
+      "CrimeRateSafetyIndex": 55.2
+    },
+    {
+      "country": "Zimbabwe",
+      "crimeRateByCountry_crimeIndex": 60.6,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.47,
+      "CrimeRate_CriminalMarketsScore": 5.03,
+      "CrimeRate_CriminalActorsScore": 5.9,
+      "CrimeRate_ResilienceScore": 3.13,
+      "CrimeRateSafetyIndex": 39.4
+    },
+    {
+      "country": "Guinea",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.58,
+      "CrimeRate_CriminalMarketsScore": 4.77,
+      "CrimeRate_CriminalActorsScore": 4.4,
+      "CrimeRate_ResilienceScore": 3.13,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Benin",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.32,
+      "CrimeRate_CriminalMarketsScore": 5.43,
+      "CrimeRate_CriminalActorsScore": 5.2,
+      "CrimeRate_ResilienceScore": 3.5,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Rwanda",
+      "crimeRateByCountry_crimeIndex": 27.3,
+      "CrimeRate_OverallCriminalityScoreGOCI": 3.6,
+      "CrimeRate_CriminalMarketsScore": 4,
+      "CrimeRate_CriminalActorsScore": 3.2,
+      "CrimeRate_ResilienceScore": 5.54,
+      "CrimeRateSafetyIndex": 72.7
+    },
+    {
+      "country": "Burundi",
+      "crimeRateByCountry_crimeIndex": 64.2,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.87,
+      "CrimeRate_CriminalMarketsScore": 4.63,
+      "CrimeRate_CriminalActorsScore": 5.1,
+      "CrimeRate_ResilienceScore": 2.17,
+      "CrimeRateSafetyIndex": 35.8
+    },
+    {
+      "country": "Bolivia",
+      "crimeRateByCountry_crimeIndex": 62,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.95,
+      "CrimeRate_CriminalMarketsScore": 5,
+      "CrimeRate_CriminalActorsScore": 4.9,
+      "CrimeRate_ResilienceScore": 4.83,
+      "CrimeRateSafetyIndex": 38
+    },
+    {
+      "country": "Tunisia",
+      "crimeRateByCountry_crimeIndex": 44.7,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.45,
+      "CrimeRate_CriminalMarketsScore": 5,
+      "CrimeRate_CriminalActorsScore": 3.9,
+      "CrimeRate_ResilienceScore": 4.5,
+      "CrimeRateSafetyIndex": 55.3
+    },
+    {
+      "country": "South Sudan",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 6.32,
+      "CrimeRate_CriminalMarketsScore": 5.13,
+      "CrimeRate_CriminalActorsScore": 7.5,
+      "CrimeRate_ResilienceScore": 1.88,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Haiti",
+      "crimeRateByCountry_crimeIndex": 78.3,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.93,
+      "CrimeRate_CriminalMarketsScore": 5.77,
+      "CrimeRate_CriminalActorsScore": 6.1,
+      "CrimeRate_ResilienceScore": 2.46,
+      "CrimeRateSafetyIndex": 21.7
+    },
+    {
+      "country": "Belgium",
+      "crimeRateByCountry_crimeIndex": 48.9,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.43,
+      "CrimeRate_CriminalMarketsScore": 5.17,
+      "CrimeRate_CriminalActorsScore": 3.7,
+      "CrimeRate_ResilienceScore": 7.04,
+      "CrimeRateSafetyIndex": 51.1
+    },
+    {
+      "country": "Jordan",
+      "crimeRateByCountry_crimeIndex": 40.7,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.93,
+      "CrimeRate_CriminalMarketsScore": 4.87,
+      "CrimeRate_CriminalActorsScore": 5,
+      "CrimeRate_ResilienceScore": 5.58,
+      "CrimeRateSafetyIndex": 59.3
+    },
+    {
+      "country": "Dominican Republic",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.02,
+      "CrimeRate_CriminalMarketsScore": 5.13,
+      "CrimeRate_CriminalActorsScore": 4.9,
+      "CrimeRate_ResilienceScore": 4.79,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "United Arab Emirates",
+      "crimeRateByCountry_crimeIndex": 14.6,
+      "CrimeRate_OverallCriminalityScoreGOCI": 6.37,
+      "CrimeRate_CriminalMarketsScore": 7.03,
+      "CrimeRate_CriminalActorsScore": 5.7,
+      "CrimeRate_ResilienceScore": 5.13,
+      "CrimeRateSafetyIndex": 85.4
+    },
+    {
+      "country": "Cuba",
+      "crimeRateByCountry_crimeIndex": 32.2,
+      "CrimeRate_OverallCriminalityScoreGOCI": 3.37,
+      "CrimeRate_CriminalMarketsScore": 3.63,
+      "CrimeRate_CriminalActorsScore": 3.1,
+      "CrimeRate_ResilienceScore": 5.38,
+      "CrimeRateSafetyIndex": 67.8
+    },
+    {
+      "country": "Honduras",
+      "crimeRateByCountry_crimeIndex": 74.3,
+      "CrimeRate_OverallCriminalityScoreGOCI": 7.05,
+      "CrimeRate_CriminalMarketsScore": 6,
+      "CrimeRate_CriminalActorsScore": 8.1,
+      "CrimeRate_ResilienceScore": 4.08,
+      "CrimeRateSafetyIndex": 25.7
+    },
+    {
+      "country": "Czech Republic",
+      "crimeRateByCountry_crimeIndex": 26.8,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.68,
+      "CrimeRate_CriminalMarketsScore": 4.87,
+      "CrimeRate_CriminalActorsScore": 4.5,
+      "CrimeRate_ResilienceScore": 6.42,
+      "CrimeRateSafetyIndex": 73.2
+    },
+    {
+      "country": "Sweden",
+      "crimeRateByCountry_crimeIndex": 48.1,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.7,
+      "CrimeRate_CriminalMarketsScore": 4.6,
+      "CrimeRate_CriminalActorsScore": 4.8,
+      "CrimeRate_ResilienceScore": 7.46,
+      "CrimeRateSafetyIndex": 51.9
+    },
+    {
+      "country": "Tajikistan",
+      "crimeRateByCountry_crimeIndex": 54.4,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.45,
+      "CrimeRate_CriminalMarketsScore": 4.8,
+      "CrimeRate_CriminalActorsScore": 6.1,
+      "CrimeRate_ResilienceScore": 2.58,
+      "CrimeRateSafetyIndex": 45.6
+    },
+    {
+      "country": "Papua New Guinea",
+      "crimeRateByCountry_crimeIndex": 80.4,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.72,
+      "CrimeRate_CriminalMarketsScore": 5.33,
+      "CrimeRate_CriminalActorsScore": 6.1,
+      "CrimeRate_ResilienceScore": 3.29,
+      "CrimeRateSafetyIndex": 19.6
+    },
+    {
+      "country": "Portugal",
+      "crimeRateByCountry_crimeIndex": 30.7,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.88,
+      "CrimeRate_CriminalMarketsScore": 4.67,
+      "CrimeRate_CriminalActorsScore": 5.1,
+      "CrimeRate_ResilienceScore": 6.5,
+      "CrimeRateSafetyIndex": 69.3
+    },
+    {
+      "country": "Azerbaijan",
+      "crimeRateByCountry_crimeIndex": 31.7,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.8,
+      "CrimeRate_CriminalMarketsScore": 4.1,
+      "CrimeRate_CriminalActorsScore": 5.5,
+      "CrimeRate_ResilienceScore": 3.96,
+      "CrimeRateSafetyIndex": 68.3
+    },
+    {
+      "country": "Greece",
+      "crimeRateByCountry_crimeIndex": 46.5,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.35,
+      "CrimeRate_CriminalMarketsScore": 4.7,
+      "CrimeRate_CriminalActorsScore": 6,
+      "CrimeRate_ResilienceScore": 5.17,
+      "CrimeRateSafetyIndex": 53.5
+    },
+    {
+      "country": "Hungary",
+      "crimeRateByCountry_crimeIndex": 33.8,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.62,
+      "CrimeRate_CriminalMarketsScore": 4.73,
+      "CrimeRate_CriminalActorsScore": 4.5,
+      "CrimeRate_ResilienceScore": 4.88,
+      "CrimeRateSafetyIndex": 66.2
+    },
+    {
+      "country": "Togo",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.23,
+      "CrimeRate_CriminalMarketsScore": 4.77,
+      "CrimeRate_CriminalActorsScore": 5.7,
+      "CrimeRate_ResilienceScore": 4.5,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Israel",
+      "crimeRateByCountry_crimeIndex": 32.2,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.85,
+      "CrimeRate_CriminalMarketsScore": 5,
+      "CrimeRate_CriminalActorsScore": 4.7,
+      "CrimeRate_ResilienceScore": 6.08,
+      "CrimeRateSafetyIndex": 67.8
+    },
+    {
+      "country": "Austria",
+      "crimeRateByCountry_crimeIndex": 27.6,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.13,
+      "CrimeRate_CriminalMarketsScore": 4.17,
+      "CrimeRate_CriminalActorsScore": 4.1,
+      "CrimeRate_ResilienceScore": 7.5,
+      "CrimeRateSafetyIndex": 72.4
+    },
+    {
+      "country": "Belarus",
+      "crimeRateByCountry_crimeIndex": 51.4,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.87,
+      "CrimeRate_CriminalMarketsScore": 5.33,
+      "CrimeRate_CriminalActorsScore": 6.4,
+      "CrimeRate_ResilienceScore": 3.25,
+      "CrimeRateSafetyIndex": 48.6
+    },
+    {
+      "country": "Switzerland",
+      "crimeRateByCountry_crimeIndex": 24.9,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.87,
+      "CrimeRate_CriminalMarketsScore": 4.63,
+      "CrimeRate_CriminalActorsScore": 5.1,
+      "CrimeRate_ResilienceScore": 7.04,
+      "CrimeRateSafetyIndex": 75.1
+    },
+    {
+      "country": "Sierra Leone",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.95,
+      "CrimeRate_CriminalMarketsScore": 4.6,
+      "CrimeRate_CriminalActorsScore": 5.3,
+      "CrimeRate_ResilienceScore": 4.04,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Laos",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 6.12,
+      "CrimeRate_CriminalMarketsScore": 6.33,
+      "CrimeRate_CriminalActorsScore": 5.9,
+      "CrimeRate_ResilienceScore": 3.46,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Turkmenistan",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.4,
+      "CrimeRate_CriminalMarketsScore": 4.4,
+      "CrimeRate_CriminalActorsScore": 4.4,
+      "CrimeRate_ResilienceScore": 2.21,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Hong Kong",
+      "crimeRateByCountry_crimeIndex": 21.7,
+      "CrimeRate_OverallCriminalityScoreGOCI": null,
+      "CrimeRate_CriminalMarketsScore": null,
+      "CrimeRate_CriminalActorsScore": null,
+      "CrimeRate_ResilienceScore": null,
+      "CrimeRateSafetyIndex": 78.3
+    },
+    {
+      "country": "Libya",
+      "crimeRateByCountry_crimeIndex": 60.4,
+      "CrimeRate_OverallCriminalityScoreGOCI": 6.93,
+      "CrimeRate_CriminalMarketsScore": 6.57,
+      "CrimeRate_CriminalActorsScore": 7.3,
+      "CrimeRate_ResilienceScore": 1.54,
+      "CrimeRateSafetyIndex": 39.6
+    },
+    {
+      "country": "Kyrgyzstan",
+      "crimeRateByCountry_crimeIndex": 53.9,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.32,
+      "CrimeRate_CriminalMarketsScore": 4.63,
+      "CrimeRate_CriminalActorsScore": 6,
+      "CrimeRate_ResilienceScore": 3.83,
+      "CrimeRateSafetyIndex": 46.1
+    },
+    {
+      "country": "Paraguay",
+      "crimeRateByCountry_crimeIndex": 50.6,
+      "CrimeRate_OverallCriminalityScoreGOCI": 7.52,
+      "CrimeRate_CriminalMarketsScore": 6.73,
+      "CrimeRate_CriminalActorsScore": 8.3,
+      "CrimeRate_ResilienceScore": 3.42,
+      "CrimeRateSafetyIndex": 49.4
+    },
+    {
+      "country": "Nicaragua",
+      "crimeRateByCountry_crimeIndex": 50.2,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.72,
+      "CrimeRate_CriminalMarketsScore": 5.23,
+      "CrimeRate_CriminalActorsScore": 6.2,
+      "CrimeRate_ResilienceScore": 2.08,
+      "CrimeRateSafetyIndex": 49.8
+    },
+    {
+      "country": "Bulgaria",
+      "crimeRateByCountry_crimeIndex": 37.5,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.65,
+      "CrimeRate_CriminalMarketsScore": 5.4,
+      "CrimeRate_CriminalActorsScore": 5.9,
+      "CrimeRate_ResilienceScore": 5.33,
+      "CrimeRateSafetyIndex": 62.5
+    },
+    {
+      "country": "Serbia",
+      "crimeRateByCountry_crimeIndex": 38.5,
+      "CrimeRate_OverallCriminalityScoreGOCI": 6.22,
+      "CrimeRate_CriminalMarketsScore": 5.73,
+      "CrimeRate_CriminalActorsScore": 6.7,
+      "CrimeRate_ResilienceScore": 4.96,
+      "CrimeRateSafetyIndex": 61.5
+    },
+    {
+      "country": "El Salvador",
+      "crimeRateByCountry_crimeIndex": 62.1,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.92,
+      "CrimeRate_CriminalMarketsScore": 5.43,
+      "CrimeRate_CriminalActorsScore": 6.4,
+      "CrimeRate_ResilienceScore": 3.21,
+      "CrimeRateSafetyIndex": 37.9
+    },
+    {
+      "country": "Republic of the Congo",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.78,
+      "CrimeRate_CriminalMarketsScore": 4.47,
+      "CrimeRate_CriminalActorsScore": 5.1,
+      "CrimeRate_ResilienceScore": 3.25,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Denmark",
+      "crimeRateByCountry_crimeIndex": 26.6,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.02,
+      "CrimeRate_CriminalMarketsScore": 4.33,
+      "CrimeRate_CriminalActorsScore": 3.7,
+      "CrimeRate_ResilienceScore": 8.13,
+      "CrimeRateSafetyIndex": 73.4
+    },
+    {
+      "country": "Singapore",
+      "crimeRateByCountry_crimeIndex": 23.1,
+      "CrimeRate_OverallCriminalityScoreGOCI": 3.47,
+      "CrimeRate_CriminalMarketsScore": 3.93,
+      "CrimeRate_CriminalActorsScore": 3,
+      "CrimeRate_ResilienceScore": 7.83,
+      "CrimeRateSafetyIndex": 76.9
+    },
+    {
+      "country": "Lebanon",
+      "crimeRateByCountry_crimeIndex": 46.5,
+      "CrimeRate_OverallCriminalityScoreGOCI": 7.1,
+      "CrimeRate_CriminalMarketsScore": 6.3,
+      "CrimeRate_CriminalActorsScore": 7.9,
+      "CrimeRate_ResilienceScore": 3.46,
+      "CrimeRateSafetyIndex": 53.5
+    },
+    {
+      "country": "Finland",
+      "crimeRateByCountry_crimeIndex": 26.5,
+      "CrimeRate_OverallCriminalityScoreGOCI": 2.98,
+      "CrimeRate_CriminalMarketsScore": 3.27,
+      "CrimeRate_CriminalActorsScore": 2.7,
+      "CrimeRate_ResilienceScore": 8.63,
+      "CrimeRateSafetyIndex": 73.5
+    },
+    {
+      "country": "Liberia",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.5,
+      "CrimeRate_CriminalMarketsScore": 5.4,
+      "CrimeRate_CriminalActorsScore": 5.6,
+      "CrimeRate_ResilienceScore": 3.25,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Norway",
+      "crimeRateByCountry_crimeIndex": 32.5,
+      "CrimeRate_OverallCriminalityScoreGOCI": 3.75,
+      "CrimeRate_CriminalMarketsScore": 4.1,
+      "CrimeRate_CriminalActorsScore": 3.4,
+      "CrimeRate_ResilienceScore": 7.92,
+      "CrimeRateSafetyIndex": 67.5
+    },
+    {
+      "country": "Slovakia",
+      "crimeRateByCountry_crimeIndex": 31.3,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.72,
+      "CrimeRate_CriminalMarketsScore": 4.73,
+      "CrimeRate_CriminalActorsScore": 4.7,
+      "CrimeRate_ResilienceScore": 5.29,
+      "CrimeRateSafetyIndex": 68.7
+    },
+    {
+      "country": "Palestine",
+      "crimeRateByCountry_crimeIndex": 41.2,
+      "CrimeRate_OverallCriminalityScoreGOCI": null,
+      "CrimeRate_CriminalMarketsScore": null,
+      "CrimeRate_CriminalActorsScore": null,
+      "CrimeRate_ResilienceScore": null,
+      "CrimeRateSafetyIndex": 58.8
+    },
+    {
+      "country": "Central African Republic",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 6.75,
+      "CrimeRate_CriminalMarketsScore": 5.6,
+      "CrimeRate_CriminalActorsScore": 7.9,
+      "CrimeRate_ResilienceScore": 1.79,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Oman",
+      "crimeRateByCountry_crimeIndex": 19.6,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.4,
+      "CrimeRate_CriminalMarketsScore": 4.9,
+      "CrimeRate_CriminalActorsScore": 3.9,
+      "CrimeRate_ResilienceScore": 5.21,
+      "CrimeRateSafetyIndex": 80.4
+    },
+    {
+      "country": "Ireland",
+      "crimeRateByCountry_crimeIndex": 46.1,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.08,
+      "CrimeRate_CriminalMarketsScore": 5.17,
+      "CrimeRate_CriminalActorsScore": 5,
+      "CrimeRate_ResilienceScore": 7.33,
+      "CrimeRateSafetyIndex": 53.9
+    },
+    {
+      "country": "New Zealand",
+      "crimeRateByCountry_crimeIndex": 47.1,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.08,
+      "CrimeRate_CriminalMarketsScore": 3.77,
+      "CrimeRate_CriminalActorsScore": 4.4,
+      "CrimeRate_ResilienceScore": 7.88,
+      "CrimeRateSafetyIndex": 52.9
+    },
+    {
+      "country": "Mauritania",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.38,
+      "CrimeRate_CriminalMarketsScore": 4.27,
+      "CrimeRate_CriminalActorsScore": 4.5,
+      "CrimeRate_ResilienceScore": 3.13,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Costa Rica",
+      "crimeRateByCountry_crimeIndex": 53.7,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.53,
+      "CrimeRate_CriminalMarketsScore": 5.37,
+      "CrimeRate_CriminalActorsScore": 5.7,
+      "CrimeRate_ResilienceScore": 5.63,
+      "CrimeRateSafetyIndex": 46.3
+    },
+    {
+      "country": "Kuwait",
+      "crimeRateByCountry_crimeIndex": 32.6,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.2,
+      "CrimeRate_CriminalMarketsScore": 5.7,
+      "CrimeRate_CriminalActorsScore": 4.7,
+      "CrimeRate_ResilienceScore": 5.54,
+      "CrimeRateSafetyIndex": 67.4
+    },
+    {
+      "country": "Panama",
+      "crimeRateByCountry_crimeIndex": 44.1,
+      "CrimeRate_OverallCriminalityScoreGOCI": 6.98,
+      "CrimeRate_CriminalMarketsScore": 6.67,
+      "CrimeRate_CriminalActorsScore": 7.3,
+      "CrimeRate_ResilienceScore": 4.67,
+      "CrimeRateSafetyIndex": 55.9
+    },
+    {
+      "country": "Croatia",
+      "crimeRateByCountry_crimeIndex": 26.1,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.15,
+      "CrimeRate_CriminalMarketsScore": 4.9,
+      "CrimeRate_CriminalActorsScore": 5.4,
+      "CrimeRate_ResilienceScore": 5.92,
+      "CrimeRateSafetyIndex": 73.9
+    },
+    {
+      "country": "Georgia",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 3.6,
+      "CrimeRate_CriminalMarketsScore": 3.6,
+      "CrimeRate_CriminalActorsScore": 3.6,
+      "CrimeRate_ResilienceScore": 5.25,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Eritrea",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 3.97,
+      "CrimeRate_CriminalMarketsScore": 3.93,
+      "CrimeRate_CriminalActorsScore": 4,
+      "CrimeRate_ResilienceScore": 2.33,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Mongolia",
+      "crimeRateByCountry_crimeIndex": 53.5,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.12,
+      "CrimeRate_CriminalMarketsScore": 3.83,
+      "CrimeRate_CriminalActorsScore": 4.4,
+      "CrimeRate_ResilienceScore": 5.21,
+      "CrimeRateSafetyIndex": 46.5
+    },
+    {
+      "country": "Uruguay",
+      "crimeRateByCountry_crimeIndex": 51.9,
+      "CrimeRate_OverallCriminalityScoreGOCI": 3.22,
+      "CrimeRate_CriminalMarketsScore": 3.33,
+      "CrimeRate_CriminalActorsScore": 3.1,
+      "CrimeRate_ResilienceScore": 7.5,
+      "CrimeRateSafetyIndex": 48.1
+    },
+    {
+      "country": "Puerto Rico",
+      "crimeRateByCountry_crimeIndex": 61.7,
+      "CrimeRate_OverallCriminalityScoreGOCI": null,
+      "CrimeRate_CriminalMarketsScore": null,
+      "CrimeRate_CriminalActorsScore": null,
+      "CrimeRate_ResilienceScore": null,
+      "CrimeRateSafetyIndex": 38.3
+    },
+    {
+      "country": "Bosnia and Herzegovina",
+      "crimeRateByCountry_crimeIndex": 42.5,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.85,
+      "CrimeRate_CriminalMarketsScore": 5.3,
+      "CrimeRate_CriminalActorsScore": 6.4,
+      "CrimeRate_ResilienceScore": 3.88,
+      "CrimeRateSafetyIndex": 57.5
+    },
+    {
+      "country": "Qatar",
+      "crimeRateByCountry_crimeIndex": 14.3,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.45,
+      "CrimeRate_CriminalMarketsScore": 5.7,
+      "CrimeRate_CriminalActorsScore": 5.2,
+      "CrimeRate_ResilienceScore": 5.42,
+      "CrimeRateSafetyIndex": 85.7
+    },
+    {
+      "country": "Moldova",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.6,
+      "CrimeRate_CriminalMarketsScore": 5.2,
+      "CrimeRate_CriminalActorsScore": 6,
+      "CrimeRate_ResilienceScore": 3.92,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Namibia",
+      "crimeRateByCountry_crimeIndex": 64.6,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.3,
+      "CrimeRate_CriminalMarketsScore": 4.1,
+      "CrimeRate_CriminalActorsScore": 4.5,
+      "CrimeRate_ResilienceScore": 4.54,
+      "CrimeRateSafetyIndex": 35.4
+    },
+    {
+      "country": "Armenia",
+      "crimeRateByCountry_crimeIndex": 21.6,
+      "CrimeRate_OverallCriminalityScoreGOCI": 2.82,
+      "CrimeRate_CriminalMarketsScore": 2.93,
+      "CrimeRate_CriminalActorsScore": 2.7,
+      "CrimeRate_ResilienceScore": 5.71,
+      "CrimeRateSafetyIndex": 78.4
+    },
+    {
+      "country": "Lithuania",
+      "crimeRateByCountry_crimeIndex": 33.2,
+      "CrimeRate_OverallCriminalityScoreGOCI": 3.9,
+      "CrimeRate_CriminalMarketsScore": 3.8,
+      "CrimeRate_CriminalActorsScore": 4,
+      "CrimeRate_ResilienceScore": 7.29,
+      "CrimeRateSafetyIndex": 66.8
+    },
+    {
+      "country": "Jamaica",
+      "crimeRateByCountry_crimeIndex": 67.5,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.8,
+      "CrimeRate_CriminalMarketsScore": 4.9,
+      "CrimeRate_CriminalActorsScore": 6.7,
+      "CrimeRate_ResilienceScore": 5.42,
+      "CrimeRateSafetyIndex": 32.5
+    },
+    {
+      "country": "Albania",
+      "crimeRateByCountry_crimeIndex": 45.4,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.17,
+      "CrimeRate_CriminalMarketsScore": 4.83,
+      "CrimeRate_CriminalActorsScore": 5.5,
+      "CrimeRate_ResilienceScore": 5.13,
+      "CrimeRateSafetyIndex": 54.6
+    },
+    {
+      "country": "Gambia",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.53,
+      "CrimeRate_CriminalMarketsScore": 4.67,
+      "CrimeRate_CriminalActorsScore": 4.4,
+      "CrimeRate_ResilienceScore": 5.17,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Gabon",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.85,
+      "CrimeRate_CriminalMarketsScore": 4.6,
+      "CrimeRate_CriminalActorsScore": 5.1,
+      "CrimeRate_ResilienceScore": 3.25,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Botswana",
+      "crimeRateByCountry_crimeIndex": 52.6,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.35,
+      "CrimeRate_CriminalMarketsScore": 4.4,
+      "CrimeRate_CriminalActorsScore": 4.3,
+      "CrimeRate_ResilienceScore": 5.46,
+      "CrimeRateSafetyIndex": 47.4
+    },
+    {
+      "country": "Lesotho",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 3.92,
+      "CrimeRate_CriminalMarketsScore": 3.43,
+      "CrimeRate_CriminalActorsScore": 4.4,
+      "CrimeRate_ResilienceScore": 3.92,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Slovenia",
+      "crimeRateByCountry_crimeIndex": 24.2,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.37,
+      "CrimeRate_CriminalMarketsScore": 4.03,
+      "CrimeRate_CriminalActorsScore": 4.7,
+      "CrimeRate_ResilienceScore": 6.04,
+      "CrimeRateSafetyIndex": 75.8
+    },
+    {
+      "country": "Equatorial Guinea",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.38,
+      "CrimeRate_CriminalMarketsScore": 3.57,
+      "CrimeRate_CriminalActorsScore": 5.2,
+      "CrimeRate_ResilienceScore": 2.21,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Latvia",
+      "crimeRateByCountry_crimeIndex": 37.3,
+      "CrimeRate_OverallCriminalityScoreGOCI": 3.9,
+      "CrimeRate_CriminalMarketsScore": 4.5,
+      "CrimeRate_CriminalActorsScore": 3.3,
+      "CrimeRate_ResilienceScore": 7.58,
+      "CrimeRateSafetyIndex": 62.7
+    },
+    {
+      "country": "North Macedonia",
+      "crimeRateByCountry_crimeIndex": 40.7,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.03,
+      "CrimeRate_CriminalMarketsScore": 4.87,
+      "CrimeRate_CriminalActorsScore": 5.2,
+      "CrimeRate_ResilienceScore": 5.29,
+      "CrimeRateSafetyIndex": 59.3
+    },
+    {
+      "country": "Bahrain",
+      "crimeRateByCountry_crimeIndex": 24.2,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.95,
+      "CrimeRate_CriminalMarketsScore": 5.4,
+      "CrimeRate_CriminalActorsScore": 4.5,
+      "CrimeRate_ResilienceScore": 5.42,
+      "CrimeRateSafetyIndex": 75.8
+    },
+    {
+      "country": "Trinidad and Tobago",
+      "crimeRateByCountry_crimeIndex": 70.8,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.2,
+      "CrimeRate_CriminalMarketsScore": 4.8,
+      "CrimeRate_CriminalActorsScore": 5.6,
+      "CrimeRate_ResilienceScore": 5.33,
+      "CrimeRateSafetyIndex": 29.2
+    },
+    {
+      "country": "Timor-Leste",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.08,
+      "CrimeRate_CriminalMarketsScore": 3.67,
+      "CrimeRate_CriminalActorsScore": 4.5,
+      "CrimeRate_ResilienceScore": 3.83,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Estonia",
+      "crimeRateByCountry_crimeIndex": 24.5,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.25,
+      "CrimeRate_CriminalMarketsScore": 4.2,
+      "CrimeRate_CriminalActorsScore": 4.3,
+      "CrimeRate_ResilienceScore": 7.88,
+      "CrimeRateSafetyIndex": 75.5
+    },
+    {
+      "country": "Cyprus",
+      "crimeRateByCountry_crimeIndex": 32.6,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.43,
+      "CrimeRate_CriminalMarketsScore": 3.97,
+      "CrimeRate_CriminalActorsScore": 4.9,
+      "CrimeRate_ResilienceScore": 4.46,
+      "CrimeRateSafetyIndex": 67.4
+    },
+    {
+      "country": "Mauritius",
+      "crimeRateByCountry_crimeIndex": 48.1,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.37,
+      "CrimeRate_CriminalMarketsScore": 4.13,
+      "CrimeRate_CriminalActorsScore": 4.6,
+      "CrimeRate_ResilienceScore": 5.54,
+      "CrimeRateSafetyIndex": 51.9
+    },
+    {
+      "country": "Eswatini",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.38,
+      "CrimeRate_CriminalMarketsScore": 3.87,
+      "CrimeRate_CriminalActorsScore": 4.9,
+      "CrimeRate_ResilienceScore": 3.29,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Djibouti",
+      "crimeRateByCountry_crimeIndex": 61.1,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.65,
+      "CrimeRate_CriminalMarketsScore": 4.3,
+      "CrimeRate_CriminalActorsScore": 5,
+      "CrimeRate_ResilienceScore": 4.38,
+      "CrimeRateSafetyIndex": 38.9
+    },
+    {
+      "country": "Fiji",
+      "crimeRateByCountry_crimeIndex": 56.7,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.15,
+      "CrimeRate_CriminalMarketsScore": 4.3,
+      "CrimeRate_CriminalActorsScore": 4,
+      "CrimeRate_ResilienceScore": 5.42,
+      "CrimeRateSafetyIndex": 43.3
+    },
+    {
+      "country": "Comoros",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 3.92,
+      "CrimeRate_CriminalMarketsScore": 3.73,
+      "CrimeRate_CriminalActorsScore": 4.1,
+      "CrimeRate_ResilienceScore": 2.38,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Guyana",
+      "crimeRateByCountry_crimeIndex": 68.8,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.97,
+      "CrimeRate_CriminalMarketsScore": 5.13,
+      "CrimeRate_CriminalActorsScore": 6.8,
+      "CrimeRate_ResilienceScore": 4.04,
+      "CrimeRateSafetyIndex": 31.2
+    },
+    {
+      "country": "Solomon Islands",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.4,
+      "CrimeRate_CriminalMarketsScore": 3.7,
+      "CrimeRate_CriminalActorsScore": 5.1,
+      "CrimeRate_ResilienceScore": 5.08,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Bhutan",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 3.9,
+      "CrimeRate_CriminalMarketsScore": 3.9,
+      "CrimeRate_CriminalActorsScore": 3.9,
+      "CrimeRate_ResilienceScore": 4.71,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Luxembourg",
+      "crimeRateByCountry_crimeIndex": 34,
+      "CrimeRate_OverallCriminalityScoreGOCI": 2.85,
+      "CrimeRate_CriminalMarketsScore": 2.9,
+      "CrimeRate_CriminalActorsScore": 2.8,
+      "CrimeRate_ResilienceScore": 7.5,
+      "CrimeRateSafetyIndex": 66
+    },
+    {
+      "country": "Montenegro",
+      "crimeRateByCountry_crimeIndex": 36.9,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5.9,
+      "CrimeRate_CriminalMarketsScore": 5.2,
+      "CrimeRate_CriminalActorsScore": 6.6,
+      "CrimeRate_ResilienceScore": 4.75,
+      "CrimeRateSafetyIndex": 63.1
+    },
+    {
+      "country": "Suriname",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.77,
+      "CrimeRate_CriminalMarketsScore": 4.53,
+      "CrimeRate_CriminalActorsScore": 5,
+      "CrimeRate_ResilienceScore": 3.04,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Malta",
+      "crimeRateByCountry_crimeIndex": 40,
+      "CrimeRate_OverallCriminalityScoreGOCI": 5,
+      "CrimeRate_CriminalMarketsScore": 4.3,
+      "CrimeRate_CriminalActorsScore": 5.7,
+      "CrimeRate_ResilienceScore": 5.13,
+      "CrimeRateSafetyIndex": 60
+    },
+    {
+      "country": "Maldives",
+      "crimeRateByCountry_crimeIndex": 55.2,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.27,
+      "CrimeRate_CriminalMarketsScore": 3.53,
+      "CrimeRate_CriminalActorsScore": 5,
+      "CrimeRate_ResilienceScore": 4.08,
+      "CrimeRateSafetyIndex": 44.8
+    },
+    {
+      "country": "Cape Verde",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.28,
+      "CrimeRate_CriminalMarketsScore": 3.97,
+      "CrimeRate_CriminalActorsScore": 4.6,
+      "CrimeRate_ResilienceScore": 6.58,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Brunei",
+      "crimeRateByCountry_crimeIndex": 29.2,
+      "CrimeRate_OverallCriminalityScoreGOCI": 2.85,
+      "CrimeRate_CriminalMarketsScore": 3.3,
+      "CrimeRate_CriminalActorsScore": 2.4,
+      "CrimeRate_ResilienceScore": 4.58,
+      "CrimeRateSafetyIndex": 70.8
+    },
+    {
+      "country": "Belize",
+      "crimeRateByCountry_crimeIndex": 52.3,
+      "CrimeRate_OverallCriminalityScoreGOCI": 4.87,
+      "CrimeRate_CriminalMarketsScore": 4.43,
+      "CrimeRate_CriminalActorsScore": 5.3,
+      "CrimeRate_ResilienceScore": 3.29,
+      "CrimeRateSafetyIndex": 47.7
+    },
+    {
+      "country": "Bahamas",
+      "crimeRateByCountry_crimeIndex": 60.3,
+      "CrimeRate_OverallCriminalityScoreGOCI": 3.75,
+      "CrimeRate_CriminalMarketsScore": 3.6,
+      "CrimeRate_CriminalActorsScore": 3.9,
+      "CrimeRate_ResilienceScore": 5.5,
+      "CrimeRateSafetyIndex": 39.7
+    },
+    {
+      "country": "Iceland",
+      "crimeRateByCountry_crimeIndex": 25,
+      "CrimeRate_OverallCriminalityScoreGOCI": 3.37,
+      "CrimeRate_CriminalMarketsScore": 2.93,
+      "CrimeRate_CriminalActorsScore": 3.8,
+      "CrimeRate_ResilienceScore": 8.21,
+      "CrimeRateSafetyIndex": 75
+    },
+    {
+      "country": "Vanuatu",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 2.43,
+      "CrimeRate_CriminalMarketsScore": 2.67,
+      "CrimeRate_CriminalActorsScore": 2.2,
+      "CrimeRate_ResilienceScore": 5.13,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Barbados",
+      "crimeRateByCountry_crimeIndex": 46.6,
+      "CrimeRate_OverallCriminalityScoreGOCI": 3.07,
+      "CrimeRate_CriminalMarketsScore": 2.43,
+      "CrimeRate_CriminalActorsScore": 3.7,
+      "CrimeRate_ResilienceScore": 6.13,
+      "CrimeRateSafetyIndex": 53.4
+    },
+    {
+      "country": "Sao Tome and Principe",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 1.7,
+      "CrimeRate_CriminalMarketsScore": 1.7,
+      "CrimeRate_CriminalActorsScore": 1.7,
+      "CrimeRate_ResilienceScore": 4.92,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Samoa",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 2.43,
+      "CrimeRate_CriminalMarketsScore": 2.97,
+      "CrimeRate_CriminalActorsScore": 1.9,
+      "CrimeRate_ResilienceScore": 5.83,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Saint Lucia",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 3.53,
+      "CrimeRate_CriminalMarketsScore": 2.67,
+      "CrimeRate_CriminalActorsScore": 4.4,
+      "CrimeRate_ResilienceScore": 5.58,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Kiribati",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 2.45,
+      "CrimeRate_CriminalMarketsScore": 2.6,
+      "CrimeRate_CriminalActorsScore": 2.3,
+      "CrimeRate_ResilienceScore": 4.33,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Seychelles",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 3.9,
+      "CrimeRate_CriminalMarketsScore": 3.5,
+      "CrimeRate_CriminalActorsScore": 4.3,
+      "CrimeRate_ResilienceScore": 5.21,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Grenada",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 2.93,
+      "CrimeRate_CriminalMarketsScore": 2.67,
+      "CrimeRate_CriminalActorsScore": 3.2,
+      "CrimeRate_ResilienceScore": 5.13,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Micronesia",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 3,
+      "CrimeRate_CriminalMarketsScore": 3,
+      "CrimeRate_CriminalActorsScore": 3,
+      "CrimeRate_ResilienceScore": 5.88,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Tonga",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 3.7,
+      "CrimeRate_CriminalMarketsScore": 3.5,
+      "CrimeRate_CriminalActorsScore": 3.9,
+      "CrimeRate_ResilienceScore": 5.29,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Saint Vincent and the Grenadines",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 3.08,
+      "CrimeRate_CriminalMarketsScore": 2.67,
+      "CrimeRate_CriminalActorsScore": 3.5,
+      "CrimeRate_ResilienceScore": 5.38,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Antigua and Barbuda",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 2.98,
+      "CrimeRate_CriminalMarketsScore": 2.67,
+      "CrimeRate_CriminalActorsScore": 3.3,
+      "CrimeRate_ResilienceScore": 4.58,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "United States Virgin Islands",
+      "crimeRateByCountry_crimeIndex": 61.2,
+      "CrimeRate_OverallCriminalityScoreGOCI": null,
+      "CrimeRate_CriminalMarketsScore": null,
+      "CrimeRate_CriminalActorsScore": null,
+      "CrimeRate_ResilienceScore": null,
+      "CrimeRateSafetyIndex": 38.8
+    },
+    {
+      "country": "Andorra",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 3.22,
+      "CrimeRate_CriminalMarketsScore": 2.73,
+      "CrimeRate_CriminalActorsScore": 3.7,
+      "CrimeRate_ResilienceScore": 7.96,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Dominica",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 2.63,
+      "CrimeRate_CriminalMarketsScore": 2.67,
+      "CrimeRate_CriminalActorsScore": 2.6,
+      "CrimeRate_ResilienceScore": 5.17,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Saint Kitts and Nevis",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 3.52,
+      "CrimeRate_CriminalMarketsScore": 2.83,
+      "CrimeRate_CriminalActorsScore": 4.2,
+      "CrimeRate_ResilienceScore": 5,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Liechtenstein",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 2.27,
+      "CrimeRate_CriminalMarketsScore": 2.33,
+      "CrimeRate_CriminalActorsScore": 2.2,
+      "CrimeRate_ResilienceScore": 8.46,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Monaco",
+      "crimeRateByCountry_crimeIndex": 24.7,
+      "CrimeRate_OverallCriminalityScoreGOCI": 2.58,
+      "CrimeRate_CriminalMarketsScore": 1.67,
+      "CrimeRate_CriminalActorsScore": 3.5,
+      "CrimeRate_ResilienceScore": 5.63,
+      "CrimeRateSafetyIndex": 75.3
+    },
+    {
+      "country": "Marshall Islands",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 2.52,
+      "CrimeRate_CriminalMarketsScore": 2.73,
+      "CrimeRate_CriminalActorsScore": 2.3,
+      "CrimeRate_ResilienceScore": 5.79,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "San Marino",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 3.48,
+      "CrimeRate_CriminalMarketsScore": 2.37,
+      "CrimeRate_CriminalActorsScore": 4.6,
+      "CrimeRate_ResilienceScore": 5.21,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Palau",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 2.7,
+      "CrimeRate_CriminalMarketsScore": 2.9,
+      "CrimeRate_CriminalActorsScore": 2.5,
+      "CrimeRate_ResilienceScore": 5.33,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Nauru",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 2.05,
+      "CrimeRate_CriminalMarketsScore": 2.2,
+      "CrimeRate_CriminalActorsScore": 1.9,
+      "CrimeRate_ResilienceScore": 5,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Tuvalu",
+      "crimeRateByCountry_crimeIndex": null,
+      "CrimeRate_OverallCriminalityScoreGOCI": 1.62,
+      "CrimeRate_CriminalMarketsScore": 1.93,
+      "CrimeRate_CriminalActorsScore": 1.3,
+      "CrimeRate_ResilienceScore": 6.08,
+      "CrimeRateSafetyIndex": null
+    },
+    {
+      "country": "Total",
+      "crimeRateByCountry_crimeIndex": 46.597187976672046,
+      "CrimeRate_OverallCriminalityScoreGOCI": null,
+      "CrimeRate_CriminalMarketsScore": null,
+      "CrimeRate_CriminalActorsScore": null,
+      "CrimeRate_ResilienceScore": null,
+      "CrimeRateSafetyIndex": null
+    }
+  ]

@@ -4,7 +4,7 @@ import dotenv
 from mysql import connector
 import pandas as pd
 from pymongo import MongoClient
-from .format import infer_mysql_data_type
+from .format import infer_mysql_data_type, batch
 
 dotenv.load_dotenv()
 
@@ -30,30 +30,22 @@ def upload_json_to_mongodb(file_path: str, collection_name: str, batch_size: int
     """
     mongo_collection = mongo_db[collection_name]  # Access or create the collection
 
-    with open(file_path, 'r') as json_file:
-        documents = []
-        total_uploaded = 0
-
-        for line_number, line in enumerate(json_file, start=1):
-            try:
-                # Parse each line as a JSON object
-                json_obj = json.loads(line.strip())
-                documents.append(json_obj)
-
-                # Insert in batches
-                if len(documents) >= batch_size:
-                    mongo_collection.insert_many(documents)
-                    total_uploaded += len(documents)
-                    documents.clear()  # Clear the batch after insertion
-            except json.JSONDecodeError as e:
-                print(f"Error parsing line {line_number}: {line.strip()}\n{e}")
-
-        # Insert any remaining documents
-        if documents:
-            mongo_collection.insert_many(documents)
-            total_uploaded += len(documents)
-
-        print(f"Uploaded {total_uploaded} documents to the '{collection_name}' collection in MongoDB.")
+    with open(file_path, 'r') as f:
+        try:
+            # Try loading as JSON array
+            data = json.load(f)
+        except json.JSONDecodeError:
+            # Assume JSON Lines if decoding fails
+            f.seek(0)  # Reset file pointer
+            data = [json.loads(line) for line in f]
+    
+    if isinstance(data, list):
+        # Batch insertion to avoid exceeding MongoDB size limits
+        for batch_data in batch(data, batch_size):
+            mongo_collection.insert_many(batch_data)
+    else:
+        # Insert single document
+        mongo_collection.insert_one(data)
 
 
 def upload_csv_to_mysql(file_path: str, table_name: str = 'uploaded_data') -> None:
@@ -71,7 +63,7 @@ def upload_csv_to_mysql(file_path: str, table_name: str = 'uploaded_data') -> No
 
     # Infer column data types
     columns_with_types = [
-        f"{col} {infer_mysql_data_type(df[col])}" for col in df.columns
+        f"`{col}` {infer_mysql_data_type(df[col])}" for col in df.columns
     ]
     columns_definition = ', '.join(columns_with_types)
 

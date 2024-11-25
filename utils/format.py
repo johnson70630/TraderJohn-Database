@@ -2,6 +2,7 @@ from decimal import Decimal
 from typing import Dict, List, Any
 from datetime import datetime, date
 import pandas as pd
+from itertools import islice
 
 def format_value(value: Any) -> str:
     """Format a value for table display."""
@@ -114,13 +115,6 @@ def infer_mysql_data_type(series: pd.Series) -> str:
     :param series: Pandas Series representing a column.
     :return: MySQL data type as a string.
     """
-
-    # Attempt to convert to datetime if the column appears to contain dates
-    try:
-        series = pd.to_datetime(series, errors='ignore')
-    except Exception:
-        pass
-
     if pd.api.types.is_integer_dtype(series):
         return "INT"
     elif pd.api.types.is_float_dtype(series):
@@ -131,3 +125,11 @@ def infer_mysql_data_type(series: pd.Series) -> str:
         return "VARCHAR(255)"
     else:
         return "TEXT" 
+
+def batch(iterable, n=1):
+    it = iter(iterable)
+    while True:
+        batch = list(islice(it, n))
+        if not batch:
+            break
+        yield batch

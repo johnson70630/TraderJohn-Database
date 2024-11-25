@@ -577,18 +577,20 @@ def main() -> None:
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler('start', start)],
         states={
-             CHOOSING: [
+            CHOOSING: [
                 MessageHandler(filters.Regex('^Upload Data$'), handle_upload_data),
                 MessageHandler(filters.Regex('^Query Data$'), show_data_overview),
                 MessageHandler(filters.Regex('^Sample Queries$'), show_sample_queries),
                 MessageHandler(filters.Regex('^Help$'), help_command),
                 MessageHandler(filters.Regex('^Exit$'), cancel),
-                MessageHandler(filters.Regex('^Back to Menu$'), start)
+                MessageHandler(filters.Regex('^Back to Menu$'), start),
+                CommandHandler('start', start),
             ],
             UPLOAD_FILE: [
                 MessageHandler(filters.Regex('^(CSV|JSON)$'), handle_file_type_selection),
                 MessageHandler(filters.Regex('^Back to Menu$'), start),
                 MessageHandler(filters.Document.ALL, handle_file_upload),
+                CommandHandler('start', start),
             ],
             QUERY_DATA: [
                 # Explicitly handle both MongoDB and MySQL selection
@@ -596,6 +598,7 @@ def main() -> None:
                 MessageHandler(filters.Regex('^Query MySQL$'), handle_database_selection),
                 MessageHandler(filters.Regex('^Back to Menu$'), start),
                 MessageHandler(filters.TEXT & ~filters.COMMAND, handle_query),
+                CommandHandler('start', start),
             ],
         },
         fallbacks=[
