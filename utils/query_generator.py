@@ -20,40 +20,25 @@ class QueryGenerator:
 
         self.stop_words = set(stopwords.words('english'))
         
-        # Expanded keyword mappings for SQL components
-        self.KEYWORDS = {
-            'select': {
-                'words': ['show', 'display', 'get', 'find', 'search', 'list', 'what', 'give', 'fetch', 'retrieve', 'select'],
-                'aggregates': {
-                    'count': ['count', 'number of', 'how many', 'total number'],
-                    'sum': ['sum', 'total', 'add up'],
-                    'avg': ['average', 'mean', 'typical'],
-                    'max': ['maximum', 'highest', 'most', 'top', 'largest'],
-                    'min': ['minimum', 'lowest', 'least', 'smallest'],
-                }
-            },
-            'from': ['from', 'in', 'within', 'of'],
-            'where': {
-                'words': ['where', 'with', 'has', 'have', 'having', 'that', 'whose', 'which'],
-                'operators': {
-                    '=': ['equals', 'equal to', 'is', 'matches', 'same as'],
-                    '>': ['greater than', 'more than', 'above', 'over', 'exceeds'],
-                    '<': ['less than', 'lower than', 'below', 'under'],
-                    '>=': ['at least', 'greater than or equal to', 'minimum'],
-                    '<=': ['at most', 'less than or equal to', 'maximum'],
-                    '!=': ['not equal to', 'different from', 'not'],
-                    'LIKE': ['like', 'contains', 'similar to', 'starts with', 'ends with'],
-                    'IN': ['in', 'among', 'within', 'one of'],
-                    'BETWEEN': ['between', 'from', 'range']
-                }
-            },
-            'group_by': ['group by', 'grouped by', 'organize by', 'categorize by', 'per', 'by each'],
-            'order_by': ['order by', 'ordered by', 'sort by', 'sorted by', 'arrange by', 'arranged by'],
-            'direction': {
-                'ASC': ['ascending', 'asc', 'increasing'],
-                'DESC': ['descending', 'desc', 'decreasing', 'reverse']
-            }
+        # Define comparison words
+        self.comparisons = {
+            'greater': '>', 'more': '>', 'higher': '>', 'larger': '>', 'above': '>',
+            'less': '<', 'lower': '<', 'smaller': '<', 'below': '<', 'under': '<',
+            'equals': '=', 'is': '=', 'equal': '=', 'same': '=',
+            'at least': '>=', 'minimum': '>=', 'not less': '>=',
+            'at most': '<=', 'maximum': '<=', 'not more': '<=',
+            'not': '!=', 'different': '!='
         }
+        
+        # Define aggregate functions
+        self.aggregates = {
+            'count': ['count', 'number', 'how many'],
+            'sum': ['sum', 'total', 'add'],
+            'avg': ['average', 'mean', 'typical'],
+            'max': ['maximum', 'highest', 'most', 'largest'],
+            'min': ['minimum', 'lowest', 'least', 'smallest']
+        }
+
 
     def _extract_conditions(self, text: str) -> List[Tuple[str, str, str]]:
         """
@@ -169,88 +154,94 @@ class QueryGenerator:
         return None
 
     def extract_query_components(self, text: str, available_tables: List[str]) -> Dict[str, Any]:
-        """Extract all query components with improved natural language processing."""
-        text = self._clean_text(text)
+        """Extract query components using NLTK."""
+        tokens = word_tokenize(text.lower())
+        tagged = pos_tag(tokens)
+        
         components = {
             'select': ['*'],
             'from': None,
             'where': [],
             'group_by': [],
             'order_by': None,
-            'limit': None,
             'aggregates': []
         }
-
-        # Extract table name
-        components['from'] = self._extract_table_name(text, available_tables)
-
-        # Handle aggregate functions
-        aggregates = self._extract_aggregate_functions(text)
-        if aggregates:
-            components['aggregates'] = aggregates
-            # If we have aggregates, don't select all columns
-            if components['select'] == ['*']:
-                components['select'] = []
-
-        # Handle column selection
-        select_pattern = r'(?:show|get|find|display|select)\s+([\w\s,]+)\s+(?:from|in)\s+(\w+)'
-        select_match = re.search(select_pattern, text, re.IGNORECASE)
         
-        if select_match and not aggregates:  # Only if no aggregates found
-            columns_str = select_match.group(1)
-            columns = []
-            
-            # Split by comma and 'and'
-            for part in columns_str.split(','):
-                if ' and ' in part:
-                    columns.extend([col.strip() for col in part.split(' and ')])
-                else:
-                    columns.append(part.strip())
+        # Extract table name and columns
+        table_found = False
+        columns = []
+        agg_found = False
+        current_agg = None
+        group_by = False
+        order_by = False
+        condition_field = None
+        
+        for i, (word, tag) in enumerate(tagged):
+            if word in available_tables:
+                components['from'] = word
+                table_found = True
+                continue
+                
+            # Skip stop words
+            if word in self.stop_words:
+                continue
+                
+            # Handle aggregates
+            for agg_type, synonyms in self.aggregates.items():
+                if word in synonyms:
+                    agg_found = True
+                    current_agg = agg_type
+                    continue
                     
-            # Clean up columns
-            columns = [col for col in columns if col and col != '*']
-            if columns:
-                components['select'] = columns
-
-        # Extract WHERE conditions
-        conditions = self._extract_conditions(text)
-        if conditions:
-            components['where'] = conditions
-
-        # Handle GROUP BY
-        group_patterns = [
-            r'group(?:ed)?\s+by\s+([\w\s,]+)',
-            r'by\s+each\s+([\w\s,]+)',
-            r'per\s+([\w\s,]+)'
-        ]
+            # Handle columns and aggregates
+            if tag.startswith('NN') and word not in self.stop_words:
+                if agg_found:
+                    components['aggregates'].append((current_agg, word, f"{current_agg}_{word}"))
+                    agg_found = False
+                elif group_by:
+                    components['group_by'].append(word)
+                elif condition_field is None and any(comp in tokens[max(0, i-2):i] for comp in self.comparisons.keys()):
+                    condition_field = word
+                elif condition_field and word not in self.stop_words:
+                    operator = None
+                    for comp, op in self.comparisons.items():
+                        if comp in ' '.join(tokens[max(0, i-3):i]):
+                            operator = op
+                            break
+                    if operator:
+                        components['where'].append((condition_field, operator, word))
+                        condition_field = None
+                else:
+                    columns.append(word)
+            
+            # Handle GROUP BY
+            if word in ['group', 'grouped'] and i+1 < len(tagged) and tagged[i+1][0] == 'by':
+                group_by = True
+                continue
+            
+            # Handle ORDER BY
+            if word in ['order', 'ordered', 'sort', 'sorted'] and i+1 < len(tagged) and tagged[i+1][0] == 'by':
+                order_by = True
+                continue
+                
+            if order_by and tag.startswith('NN'):
+                direction = 'DESC' if 'desc' in tokens[i:i+2] else 'ASC'
+                components['order_by'] = (word, direction)
+                order_by = False
         
-        for pattern in group_patterns:
-            match = re.search(pattern, text, re.IGNORECASE)
-            if match:
-                groups = [g.strip() for g in match.group(1).split(',')]
-                components['group_by'] = groups
-                break
-
-        # Handle ORDER BY
-        order_by = self._extract_order_by(text)
-        if order_by:
-            components['order_by'] = order_by
-
-        # Handle LIMIT/TOP N
-        top_n_pattern = r'(?:top|first|last)\s+(\d+)(?:\s+(?:rows?|records?|results?|entries?|lines?))?'
-        top_n_match = re.search(top_n_pattern, text, re.IGNORECASE)
-        if top_n_match:
-            components['limit'] = int(top_n_match.group(1))
-
+        # Update select columns if found
+        if columns and not components['aggregates']:
+            components['select'] = columns
+        
         return components
 
     def generate_sql_query(self, components: Dict[str, Any]) -> str:
         """Generate SQL query from components."""
-        # Handle SELECT clause with aggregates
+        # Handle SELECT clause
         select_parts = []
         
         # Add aggregate functions
-        for func, field, alias in components.get('aggregates', []):
+        for func, field, alias in components['aggregates']:
             select_parts.append(f"{func}({field}) AS {alias}")
         
         # Add normal columns
@@ -271,7 +262,7 @@ class QueryGenerator:
         if components['where']:
             conditions = []
             for field, operator, value in components['where']:
-                if isinstance(value, (int, float)) or value.isdigit():
+                if value.isdigit():
                     conditions.append(f"{self._clean_column_name(field)} {operator} {value}")
                 else:
                     conditions.append(f"{self._clean_column_name(field)} {operator} '{value}'")
@@ -288,17 +279,13 @@ class QueryGenerator:
             field, direction = components['order_by']
             order_clause = f"ORDER BY {self._clean_column_name(field)} {direction}"
 
-        # Handle LIMIT clause
-        limit_clause = f"LIMIT {components['limit']}" if components['limit'] is not None else ""
-
         # Combine all clauses
         query_parts = [
             select_clause,
             from_clause,
             where_clause,
             group_clause,
-            order_clause,
-            limit_clause
+            order_clause
         ]
 
         # Join non-empty clauses with spaces

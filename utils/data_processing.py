@@ -68,7 +68,7 @@ def upload_csv_to_mysql(file_path: str, table_name: str = 'uploaded_data') -> No
     columns_definition = ', '.join(columns_with_types)
 
     # Create table if it doesn't exist
-    create_table_query = f"CREATE TABLE IF NOT EXISTS {table_name} ({columns_definition});"
+    create_table_query = f"CREATE TABLE IF NOT EXISTS {table_name.lower()} ({columns_definition});"
     cursor.execute(create_table_query)
 
     # Insert data row by row

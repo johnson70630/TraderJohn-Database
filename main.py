@@ -288,7 +288,7 @@ async def handle_database_selection(update: Update, context: CallbackContext) ->
 
             response = (
                 "📚 Available MongoDB Collections:\n\n" +
-                "\n".join([f"• {coll}" for coll in collections]) +
+                "\n".join([f"• `{coll}`" for coll in collections]) +
                 "\n\n🔍 Query Examples:\n" +
                 "• Type collection name to see all documents\n" +
                 "• `find in [collection] where field > value`\n" +
@@ -303,7 +303,7 @@ async def handle_database_selection(update: Update, context: CallbackContext) ->
 
             response = (
                 "📚 Available MySQL Tables:\n\n" +
-                "\n".join([f"• {table}" for table in tables]) +
+                "\n".join([f"• `{table}`" for table in tables]) +
                 "\n\n🔍 Query Examples:\n" +
                 "• Type table name to see first 10 rows\n" +
                 "• `select * from [table] where [condition]`\n" +
@@ -319,7 +319,7 @@ async def handle_database_selection(update: Update, context: CallbackContext) ->
         except Exception as e:
             logger.error(f"Failed to send message with Markdown: {str(e)}")
             # Try sending without Markdown formatting
-            await update.message.reply_text(response, reply_markup=reply_markup)
+            await update.message.reply_text(response.replace('`', ''), reply_markup=reply_markup)
             
         return QUERY_DATA
 
