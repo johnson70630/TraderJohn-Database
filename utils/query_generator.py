@@ -12,7 +12,8 @@ logger = logging.getLogger(__name__)
 class QueryGenerator:
     def __init__(self):
         # Download required NLTK data
-        for package in ['punkt', 'averaged_perceptron_tagger', 'stopwords', 'wordnet']:
+        for package in ['punkt', 'averaged_perceptron_tagger', 'stopwords', 'wordnet', 'maxent_ne_chunker_tab',
+                        'words',]:
             try:
                 nltk.download(package, quiet=True)
             except Exception as e:
@@ -32,6 +33,13 @@ class QueryGenerator:
                     'min': ['minimum', 'lowest', 'least', 'smallest'],
                 }
             },
+            'from': ['from', 'in', 'within', 'of'],
+            'join': {
+                'inner': ['join', 'joined with', 'combined with', 'matching'],
+                'left': ['left join', 'including all from left', 'keeping all from'],
+                'right': ['right join', 'including all from right'],
+                'outer': ['outer join', 'full join', 'including all']
+            },
             'where': {
                 'words': ['where', 'with', 'has', 'have', 'having', 'that', 'whose', 'which'],
                 'operators': {
@@ -46,8 +54,12 @@ class QueryGenerator:
                     'BETWEEN': ['between', 'from', 'range']
                 }
             },
-            'group': ['group by', 'grouped by', 'organize by', 'categorize by'],
-            'order': ['order by', 'sort by', 'arranged by', 'ranked by'],
+            'group_by': ['group by', 'grouped by', 'organize by', 'categorize by'],
+            'order_by': ['order by', 'ordered by', 'sort by', 'sorted by', 'arrange by', 'arranged by'],
+            'direction': {
+                'ASC': ['ascending', 'asc', 'increasing'],
+                'DESC': ['descending', 'desc', 'decreasing', 'reverse']
+            },
             'limit': ['limit', 'top', 'first', 'last', 'only']
         }
 
@@ -57,9 +69,22 @@ class QueryGenerator:
         text = re.sub(r'\s+', ' ', text)  # Normalize whitespace
         return text
 
-    def _identify_aggregate_function(self, tokens: List[str]) -> Optional[Tuple[str, str]]:
-        """Identify aggregate functions and their target columns."""
-        text = ' '.join(tokens)
+    def _clean_column_name(self, column_name: str) -> str:
+        """
+        Clean and format column names that might contain spaces or special characters.
+        Wraps column names with backticks if they contain spaces.
+        """
+        column_name = column_name.strip()
+        if ' ' in column_name:
+            return f"`{column_name}`"
+        return column_name
+
+    def _extract_aggregate_functions(self, text: str) -> List[Tuple[str, str]]:
+        """Extract aggregate functions and their target columns using NLTK."""
+        aggregates = []
+        tokens = word_tokenize(text.lower())
+        tagged = pos_tag(tokens)
+        
         for agg_type, phrases in self.KEYWORDS['select']['aggregates'].items():
             for phrase in phrases:
                 if phrase in text:
@@ -73,43 +98,52 @@ class QueryGenerator:
     def _extract_table_name(self, tokens: List[str]) -> Optional[str]:
         """Extract table name from tokens."""
         text = ' '.join(tokens)
-        logger.info(f"Extracting table name from: {text}")
-        
-        # Patterns for table references, updated to handle underscores
+        # Common patterns for table references
         patterns = [
-            r'from\s+([a-zA-Z][a-zA-Z0-9_]*)',
-            r'in\s+([a-zA-Z][a-zA-Z0-9_]*)\s*(?:table)?',
-            r'from\s+the\s+([a-zA-Z][a-zA-Z0-9_]*)',
+            r'from\s+([a-zA-Z_]\w*)',
+            r'in\s+([a-zA-Z_]\w*)\s+table',
+            r'from\s+the\s+([a-zA-Z_]\w*)',
+            r'in\s+([a-zA-Z_]\w*)'
         ]
         
-        # Try each pattern
         for pattern in patterns:
             match = re.search(pattern, text)
             if match:
-                table_name = match.group(1)
-                logger.info(f"Found table name via pattern '{pattern}': {table_name}")
-                return table_name
-
-        # Look for words containing underscore
-        words = text.split()
-        for word in words:
-            if '_' in word and not word.startswith('_'):
-                logger.info(f"Found table name via underscore check: {word}")
+                return match.group(1)
+                
+        # Look for plural nouns that might be table names
+        tagged = pos_tag(tokens)
+        for word, tag in tagged:
+            if tag in ['NNS', 'NNPS'] and word not in self.stop_words:
                 return word
-
-        logger.info("No table name found")
+        
         return None
-    
+
     def _extract_conditions(self, tokens: List[str]) -> List[Tuple[str, str, str]]:
         """Extract WHERE conditions from tokens."""
         conditions = []
-        text = ' '.join(tokens)
         
-        # Handle different condition patterns
+        # Define condition patterns
+        number_comparison_pattern = r'(\w+)\s*(>|<|>=|<=|=|!=)\s*(\d+(?:\.\d+)?)'
+        text_comparison_pattern = r'(\w+)\s+(?:is|equals|equal to)\s+[\'"]*([^\'"\s]+)[\'"]*'
+        
+        # Check for numeric comparisons
+        number_matches = re.finditer(number_comparison_pattern, text.lower())
+        for match in number_matches:
+            field, operator, value = match.groups()
+            conditions.append((field, operator, value))
+        
+        # Check for text comparisons
+        text_matches = re.finditer(text_comparison_pattern, text.lower())
+        for match in text_matches:
+            field, value = match.groups()
+            conditions.append((field, '=', value))
+
+        # Check for special operators from keywords
         for operator_type, phrases in self.KEYWORDS['where']['operators'].items():
             for phrase in phrases:
                 pattern = f"([\\w_]+)\\s+(?:{phrase})\\s+([\\w\\s.']+)"
-                matches = re.finditer(pattern, text)
+                matches = re.finditer(pattern, text.lower())
                 for match in matches:
                     field = match.group(1)
                     value = match.group(2).strip()
@@ -126,16 +160,42 @@ class QueryGenerator:
         
         return conditions
 
-    def _extract_order_by(self, tokens: List[str]) -> Optional[Tuple[str, str]]:
-        """Extract ORDER BY clause components."""
-        text = ' '.join(tokens)
-        for order_keyword in self.KEYWORDS['order']:
-            pattern = f"{order_keyword}\\s+([\\w_]+)(?:\\s+(asc|desc))?"
-            match = re.search(pattern, text)
-            if match:
-                field = match.group(1)
-                direction = match.group(2).upper() if match.group(2) else 'ASC'
-                return (field, direction)
+    def _extract_order_by(self, text: str) -> Optional[Tuple[str, str]]:
+        """Extract ORDER BY clause using NLTK."""
+        text = text.lower()
+        
+        # Check for ordering keywords
+        order_pattern = r'order(?:ed)?\s+by\s+([\w\s]+?)(?:\s+(desc|asc|descending|ascending))?(?:\s|$)'
+        match = re.search(order_pattern, text, re.IGNORECASE)
+        
+        if match:
+            field = match.group(1).strip()
+            direction = match.group(2).upper() if match.group(2) else 'ASC'
+            
+            # Normalize direction
+            if direction.startswith('DESC'):
+                direction = 'DESC'
+            elif direction.startswith('ASC'):
+                direction = 'ASC'
+                
+            return (field, direction)
+        
+        # Check for alternative sorting patterns
+        sort_pattern = r'sort(?:ed)?\s+by\s+([\w\s]+?)(?:\s+(desc|asc|descending|ascending))?(?:\s|$)'
+        match = re.search(sort_pattern, text, re.IGNORECASE)
+        
+        if match:
+            field = match.group(1).strip()
+            direction = match.group(2).upper() if match.group(2) else 'ASC'
+            
+            # Normalize direction
+            if direction.startswith('DESC'):
+                direction = 'DESC'
+            elif direction.startswith('ASC'):
+                direction = 'ASC'
+                
+            return (field, direction)
+            
         return None
 
     def _extract_group_by(self, tokens: List[str]) -> List[str]:
@@ -160,33 +220,33 @@ class QueryGenerator:
                 return int(match.group(1))
         return None
 
-    def extract_query_components(self, text: str) -> Dict[str, Any]:
-        """Extract all query components from natural language text."""
-        cleaned_text = self._clean_text(text)
-        tokens = word_tokenize(cleaned_text)
-        logger.info(f"Cleaned text: {cleaned_text}")
-        logger.info(f"Tokens: {tokens}")
-
+    def extract_query_components(self, text: str, available_tables: List[str]) -> Dict[str, Any]:
+        """
+        Extract all query components with improved WHERE clause handling.
+        """
+        text = self._clean_text(text)
+        tokens = word_tokenize(text)
+        tagged = pos_tag(tokens)
+        
         components = {
-            'select': ['*'],  # Default
+            'select': ['*'],
             'from': None,
             'where': [],
             'group_by': [],
             'order_by': None,
             'limit': None,
-            'aggregate': None
+            'aggregates': []
         }
 
-        # Updated patterns to handle underscore and specific query formats
-        # In QueryGenerator.extract_query_components()
+        # Handle various query patterns
         patterns = [
-            # Match "find X in Y" pattern
-            r'^find\s+(\w+)\s+in\s+([a-zA-Z][a-zA-Z0-9_]*)$',
-            # Existing patterns...
-            r'^find\s+all\s+(\w+)\s+from\s+([a-zA-Z][a-zA-Z0-9_]*)$',
+            # "show all _id in country" or "show all _id from country"
             r'^show\s+all\s+(\w+)(?:\s+in|\s+from)\s+(\w+)$',
+            # "find all cars"
             r'^find\s+all\s+(\w+)$',
+            # "cars find all"
             r'^(\w+)\s+find\s+all$',
+            # Simple name
             r'^(\w+)$'
         ]
 
@@ -196,128 +256,88 @@ class QueryGenerator:
                 logger.info(f"Matched pattern: {pattern}")
                 logger.info(f"Match groups: {match.groups()}")
                 
-                if 'find\s+(\w+)\s+in' in pattern:  # New pattern for "find X in Y"
-                    column = match.group(1)
+                if pattern.endswith('(\w+)$'):  # Simple name pattern
+                    components['from'] = match.group(1)
+                    break
+                elif 'in' in pattern or 'from' in pattern:
+                    field = match.group(1)
                     table = match.group(2)
-                    components['select'] = [column if column != 'movies' else '*']
+                    components['select'] = [field]
+                    components['from'] = table
+                    break
+                else:  # "find all" patterns
+                    table = match.group(1)
                     components['from'] = table
                     break
 
-        # If no pattern matched, try extracting components
+        # If no pattern matched, try original parsing
         if not components['from']:
-            logger.info("No pattern matched, trying component extraction")
-            components['from'] = self._extract_table_name(tokens)
-            
-            # Extract column if it exists
-            words = cleaned_text.split()
-            if len(words) >= 3 and 'all' in words:
-                try:
-                    col_idx = words.index('all') + 1
-                    if col_idx < len(words) and words[col_idx] != 'from':
-                        components['select'] = [words[col_idx]]
-                except ValueError:
-                    pass
+            # Extract components as before
+            aggregate_info = self._identify_aggregate_function(tokens)
+            if aggregate_info:
+                components['aggregate'] = aggregate_info
+                components['select'] = [f"{aggregate_info[0]}({aggregate_info[1]})"]
 
-        logger.info(f"Final components: {components}")
+            components['from'] = self._extract_table_name(tokens)
+            components['where'] = self._extract_conditions(tokens)
+            components['order_by'] = self._extract_order_by(tokens)
+            components['group_by'] = self._extract_group_by(tokens)
+            components['limit'] = self._extract_limit(tokens)
+
+        logger.info(f"Generated components: {components}")
         return components
 
-
     def generate_sql_query(self, components: Dict[str, Any]) -> str:
-        """Generate SQL query from components."""
-        if not components.get('from'):
-            return ""
+        """Generate SQL query from components with improved WHERE clause handling."""
+        # Handle SELECT clause
+        if not components['select'] or components['select'] == ['*']:
+            select_clause = "SELECT *"
+        else:
+            select_clause = f"SELECT {', '.join(self._clean_column_name(col) for col in components['select'])}"
 
-        # Build SELECT clause
-        select_clause = f"SELECT {', '.join(components['select'])}"
+        # Handle FROM clause
+        if not components['from']:
+            raise ValueError("No table name specified")
+        from_clause = f"FROM {components['from']}"
 
-        # Build FROM clause
-        from_clause = f"\nFROM {components['from']}"
-
-        # Build WHERE clause
+        # Handle WHERE clause
         where_clause = ""
         if components['where']:
             conditions = []
             for field, operator, value in components['where']:
-                if operator in ('IN', 'BETWEEN'):
-                    conditions.append(f"{field} {operator} {value}")
-                elif operator == 'LIKE':
-                    conditions.append(f"{field} {operator} '{value}'")
-                elif value.replace('.', '').isdigit():
-                    conditions.append(f"{field} {operator} {value}")
+                if isinstance(value, (int, float)) or value.isdigit():
+                    conditions.append(f"{self._clean_column_name(field)} {operator} {value}")
                 else:
-                    conditions.append(f"{field} {operator} '{value}'")
-            where_clause = "\nWHERE " + " AND ".join(conditions)
+                    conditions.append(f"{self._clean_column_name(field)} {operator} '{value}'")
+            if conditions:
+                where_clause = "WHERE " + " AND ".join(conditions)
 
-        # Build GROUP BY clause
-        group_clause = ""
-        if components['group_by']:
-            group_clause = "\nGROUP BY " + ", ".join(components['group_by'])
-
-        # Build ORDER BY clause
+        # Handle ORDER BY clause
         order_clause = ""
         if components['order_by']:
             field, direction = components['order_by']
-            order_clause = f"\nORDER BY {field} {direction}"
+            order_clause = f"ORDER BY {self._clean_column_name(field)} {direction}"
 
-        # Build LIMIT clause
-        limit_clause = ""
-        if components['limit']:
-            limit_clause = f"\nLIMIT {components['limit']}"
+        # Handle LIMIT clause
+        limit_clause = f"LIMIT {components['limit']}" if components['limit'] is not None else ""
 
         # Combine all clauses
-        query = select_clause + from_clause + where_clause + group_clause + order_clause + limit_clause
+        query_parts = [
+            select_clause,
+            from_clause,
+            where_clause,
+            order_clause,
+            limit_clause
+        ]
 
-        return query
-    
-    def generate_mongodb_query(self, components: Dict[str, Any]) -> Dict[str, Any]:
-        """Generate MongoDB query from components."""
-        query = {'find': {}}
-        
-        # Handle field selection
-        if components['select'] != ['*']:
-            query['projection'] = {field: 1 for field in components['select']}
-            # Always include _id unless explicitly excluded or another field is specified
-            if '_id' not in components['select']:
-                query['projection']['_id'] = 0
+        # Join non-empty clauses with spaces
+        query = " ".join(part for part in query_parts if part)
+        return query.strip()
 
-        # Handle where conditions
-        if components['where']:
-            for field, operator, value in components['where']:
-                try:
-                    if '.' in value:
-                        value = float(value)
-                    else:
-                        value = int(value)
-                except ValueError:
-                    value = value.strip("'\"")
-                
-                if operator == '=':
-                    query['find'][field] = value
-                elif operator == '>':
-                    query['find'][field] = {'$gt': value}
-                elif operator == '<':
-                    query['find'][field] = {'$lt': value}
-                elif operator == '>=':
-                    query['find'][field] = {'$gte': value}
-                elif operator == '<=':
-                    query['find'][field] = {'$lte': value}
-                elif operator == '!=':
-                    query['find'][field] = {'$ne': value}
-                elif operator == 'LIKE':
-                    query['find'][field] = {'$regex': value.replace('%', ''), '$options': 'i'}
-                elif operator == 'IN':
-                    values = [v.strip().strip("'\"") for v in value.strip('()').split(',')]
-                    query['find'][field] = {'$in': values}
-        
-        # Add sort
-        if components['order_by']:
-            field, direction = components['order_by']
-            query['sort'] = {field: -1 if direction == 'DESC' else 1}
-        
-        # Add limit
-        if components['limit']:
-            query['limit'] = components['limit']
-        else:
-            query['limit'] = 10  # Default limit
-            
-        return query
+
+    def _clean_column_name(self, column_name: str) -> str:
+        """Clean and format column names."""
+        column_name = column_name.strip()
+        if ' ' in column_name:
+            return f"`{column_name}`"
+        return column_name

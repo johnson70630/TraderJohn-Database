@@ -13,6 +13,11 @@ from utils.query_generator import QueryGenerator
 from utils.execute_query import QueryExecutor
 from utils.format import format_nested_fields
 
+<<<<<<< HEAD
+from typing import Dict, List, Tuple, Any, Optional, Union
+
+=======
+>>>>>>> origin/main
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -205,35 +210,52 @@ async def show_data_overview(update: Update, context: CallbackContext) -> int:
         ]
         reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True, resize_keyboard=True)
         
-        response = "📊 **Available Data Sources**:\n\n"
+        response_parts = []
+        response_parts.append("📊 Available Data Sources:\n")
         
         # MongoDB collections section
-        response += "**MongoDB Collections:**\n"
+        response_parts.append("\nMongoDB Collections:")
         if mongodb_details:
             for collection, fields in mongodb_details.items():
-                response += f"\n🔹 {collection}:\n"
+                response_parts.append(f"\n🔹 {collection}:")
                 if fields:
-                    response += format_nested_fields(fields)
+                    formatted_fields = format_nested_fields(fields)
+                    formatted_fields = formatted_fields.replace('*', '').replace('_', '').replace('`', '')
+                    response_parts.append(formatted_fields)
                 else:
-                    response += "  (Empty collection)\n"
+                    response_parts.append("  (Empty collection)")
         else:
-            response += "(No collections available)\n"
+            response_parts.append("\n(No collections available)")
         
         # MySQL tables section
-        response += "\n**MySQL Tables:**\n"
+        response_parts.append("\nMySQL Tables:")
         if mysql_details:
             for table, columns in mysql_details.items():
-                response += f"\n🔹 {table}:\n"
+                response_parts.append(f"\n🔹 {table}:")
                 for column_name, data_type in columns:
-                    response += f"  • {column_name}: {data_type}\n"
+                    response_parts.append(f"  • {column_name}: {data_type}")
         else:
-            response += "(No tables available)\n"
+            response_parts.append("\n(No tables available)")
         
-        response += "\n🔍 **To query data, first select the database type you want to query from the keyboard below.**"
+        response_parts.append("\n\n🔍 To query data, first select the database type you want to query from the keyboard below.")
         
-        await update.message.reply_text(response, reply_markup=reply_markup, parse_mode="Markdown")
-        return QUERY_DATA
+        response = "\n".join(response_parts)
         
+        try:
+            await update.message.reply_text(
+                response,
+                reply_markup=reply_markup
+            )
+            return QUERY_DATA
+            
+        except Exception as e:
+            logger.error(f"Error sending message: {str(e)}")
+            max_length = 4000
+            for i in range(0, len(response), max_length):
+                chunk = response[i:i + max_length]
+                await update.message.reply_text(chunk, reply_markup=reply_markup if i == 0 else None)
+            return QUERY_DATA
+            
     except Exception as e:
         logger.error(f"Error in show_data_overview: {str(e)}", exc_info=True)
         await update.message.reply_text(
@@ -329,59 +351,30 @@ async def handle_query(update: Update, context: CallbackContext) -> int:
             )
             return QUERY_DATA
 
+        # Get available tables based on selected database
+        available_tables = []
+        if selected_db == "Query MongoDB":
+            available_tables = context.user_data.get('mongodb_collections', [])
+        else:  # MySQL
+            available_tables = context.user_data.get('mysql_tables', [])
+
         # Handle MongoDB Query
         if selected_db == "Query MongoDB":
-            collections = context.user_data.get('mongodb_collections', set())
+            # Extract query components using the available tables
+            query_components = query_generator.extract_query_components(user_input, available_tables)
             
-            # Parse query patterns
-            query_patterns = {
-                'find_all': r'^find\s+all\s+(\w+)$',
-                'show_all_field': r'^show\s+all\s+(\w+)\s+(?:in|from)\s+(\w+)$',
-                'collection_name': r'^(\w+)$'
-            }
-            
-            # Try to match each pattern
-            mongo_query = None
-            target = None
-            field = None
-            
-            for pattern_name, pattern in query_patterns.items():
-                match = re.match(pattern, user_input.lower())
-                if match:
-                    if pattern_name == 'find_all':
-                        target = match.group(1)
-                        mongo_query = {'find': {}}
-                    elif pattern_name == 'show_all_field':
-                        field = match.group(1)
-                        target = match.group(2)
-                        mongo_query = {
-                            'find': {},
-                            'projection': {field: 1, '_id': 0}
-                        }
-                    elif pattern_name == 'collection_name':
-                        target = match.group(1)
-                        mongo_query = {'find': {}}
-                    break
-            
-            # Validate collection name
-            if not target or target not in collections:
+            if not query_components['from']:
                 await update.message.reply_text(
                     f"Please specify a valid collection name.\n\n"
                     f"Available collections:\n" +
-                    "\n".join([f"• {coll}" for coll in collections])
+                    "\n".join([f"• {coll}" for coll in available_tables])
                 )
                 return QUERY_DATA
-            
+
             # Execute MongoDB query
             try:
-                # Send query
-                await update.message.reply_text(
-                    f"MongoDB Query:\n```json\n{json.dumps(mongo_query, indent=2)}\n```",
-                    parse_mode="Markdown"
-                )
-                
-                # Execute query
-                results = query_executor.execute_mongodb_query(target, mongo_query)
+                mongo_query = {'find': {}}  # Default query
+                results = query_executor.execute_mongodb_query(query_components['from'], mongo_query)
                 results_list = list(results)[:10]
                 
                 if results_list:
@@ -405,6 +398,13 @@ async def handle_query(update: Update, context: CallbackContext) -> int:
             return QUERY_DATA
 
         # Handle MySQL Query
+<<<<<<< HEAD
+        if selected_db == "Query MySQL":
+            # Extract query components using the available tables
+            query_components = query_generator.extract_query_components(user_input, available_tables)
+            
+            if not query_components['from']:
+=======
         else:  # MySQL
             # REPLACE THIS ENTIRE SECTION with the new code:
             tables = context.user_data.get('mysql_tables', set())
@@ -447,14 +447,17 @@ async def handle_query(update: Update, context: CallbackContext) -> int:
 
             # Keep the rest of the MySQL handling code (validation and execution)
             if not target or target not in tables:
+>>>>>>> origin/main
                 await update.message.reply_text(
                     f"Please specify a valid table name.\n\n"
                     f"Available tables:\n" +
-                    "\n".join([f"• {table}" for table in tables])
+                    "\n".join([f"• {table}" for table in available_tables])
                 )
                 return QUERY_DATA
+
+            # Generate and execute SQL query
+            sql_query = query_generator.generate_sql_query(query_components)
             
-            # Execute MySQL query
             try:
                 # Send query
                 await update.message.reply_text(
@@ -462,40 +465,15 @@ async def handle_query(update: Update, context: CallbackContext) -> int:
                     parse_mode="Markdown"
                 )
                 
-                # Execute query
+                # Execute query and get results
                 results = query_executor.execute_sql_query(sql_query)
                 
                 if not results:
                     await update.message.reply_text("No results found.")
                     return QUERY_DATA
-                
-                # Format in vertical chunks of 5 columns
-                columns = list(results[0].keys())
-                
-                # Group columns into sets of 5
-                for i in range(0, len(columns), 5):
-                    col_group = columns[i:i+5]
-                    
-                    # Create mini table for this column group
-                    header = " | ".join(f"{col:15}" for col in col_group)
-                    separator = "-" * len(header)
-                    
-                    rows = []
-                    for row in results:
-                        row_values = [f"{str(row[col]):15}" for col in col_group]
-                        rows.append(" | ".join(row_values))
-                    
-                    group_table = f"Columns {i+1}-{i+len(col_group)}:\n"
-                    group_table += header + "\n" + separator + "\n"
-                    group_table += "\n".join(rows)
-                    
-                    # Send each column group separately
-                    await update.message.reply_text(
-                        f"```\n{group_table}\n```",
-                        parse_mode="Markdown"
-                    )
-                
-                await update.message.reply_text(f"\nTotal rows: {len(results)}")
+
+                # Process results in smaller chunks
+                await process_and_send_results(update, results)
                 
             except Exception as e:
                 logger.error(f"MySQL execution error: {str(e)}")
@@ -504,12 +482,61 @@ async def handle_query(update: Update, context: CallbackContext) -> int:
             return QUERY_DATA
         
     except Exception as e:
+<<<<<<< HEAD
+            logger.error(f"Query error: {str(e)}", exc_info=True)
+            await update.message.reply_text(f"Error processing query: {str(e)}")
+            return QUERY_DATA
+            
+async def process_and_send_results(update: Update, results: List[Dict[str, Any]]) -> None:
+    """Helper function to process and send query results in chunks"""
+    # Get columns
+    columns = list(results[0].keys())
+    
+    # Process results in chunks of 5 columns
+    for col_start in range(0, len(columns), 5):
+        # Get current column chunk (up to 5 columns)
+        current_columns = columns[col_start:col_start + 5]
+        
+        # Calculate max width for each column in this chunk
+        col_widths = {}
+        for col in current_columns:
+            max_width = len(col)
+            for row in results[:10]:  # Look at first 10 rows for width calculation
+                width = len(str(row[col]))
+                max_width = min(max(max_width, width), 20)  # Cap at 20 chars
+            col_widths[col] = max_width
+
+        # Create formatted rows for this chunk
+        formatted_rows = []
+        
+        # Add header for this chunk
+        chunk_header = " | ".join(f"{col:{col_widths[col]}}" for col in current_columns)
+        chunk_separator = "-" * len(chunk_header)
+        formatted_rows.append(f"Columns {col_start + 1}-{col_start + len(current_columns)}:")
+        formatted_rows.append(chunk_header)
+        formatted_rows.append(chunk_separator)
+        
+        # Add data rows for this chunk
+        for row in results[:10]:  # Show first 10 rows
+            row_values = [f"{str(row[col])[:col_widths[col]]:{col_widths[col]}}" for col in current_columns]
+            formatted_rows.append(" | ".join(row_values))
+        
+        # Send this column chunk
+        chunk_message = "```\n" + "\n".join(formatted_rows) + "\n```"
+        await update.message.reply_text(chunk_message, parse_mode="Markdown")
+=======
         logger.error(f"Query error: {str(e)}", exc_info=True)
         await update.message.reply_text(f"Error processing query: {str(e)}")
         return QUERY_DATA
 
         
+>>>>>>> origin/main
     
+    if len(results) > 10:
+        await update.message.reply_text(f"Showing first 10 of {len(results)} results")
+    else:
+        await update.message.reply_text(f"Total rows: {len(results)}")
+        
 async def cancel(update: Update, context: CallbackContext) -> int:
     """Cancel conversation."""
     await update.message.reply_text(
@@ -517,6 +544,85 @@ async def cancel(update: Update, context: CallbackContext) -> int:
         reply_markup=ReplyKeyboardRemove()
     )
     return ConversationHandler.END
+async def show_sample_queries(update: Update, context: CallbackContext) -> int:
+    """Show sample queries and their outputs with natural language descriptions."""
+    sample_queries = [
+        # MySQL Examples
+        {
+            "type": "MySQL",
+            "description": "Retrieve all movies released after the year 2000.",
+            "query": "SELECT movie, year_released FROM pixar_movies WHERE year_released > 2000;",
+            "output": "Movie           | Year Released\nFinding Nemo   | 2003\nThe Incredibles | 2004"
+        },
+        {
+            "type": "MySQL",
+            "description": "Find the top 5 movies with the highest Rotten Tomatoes ratings.",
+            "query": "SELECT movie, rotten_tomatoes_rating FROM pixar_movies ORDER BY rotten_tomatoes_rating DESC LIMIT 5;",
+            "output": "Movie           | Rotten Tomatoes Rating\nToy Story       | 100%\nFinding Nemo    | 99%"
+        },
+        {
+            "type": "MySQL",
+            "description": "Calculate the average IMDb rating of all Pixar movies.",
+            "query": "SELECT AVG(imdb_rating) AS average_rating FROM pixar_movies;",
+            "output": "Average IMDb Rating\n8.1"
+        },
+        {
+            "type": "MySQL",
+            "description": "List all movies directed by 'John Lasseter'.",
+            "query": "SELECT movie FROM pixar_movies WHERE director = 'John Lasseter';",
+            "output": "Movie\nToy Story\nA Bug's Life"
+        },
+        # MongoDB Examples
+        {
+            "type": "MongoDB",
+            "description": "Retrieve all orders where the price is greater than 100.",
+            "query": "db.orders.find({ price: { $gt: 100 } });",
+            "output": "[\n  { OrderID: 12345, Price: 120 },\n  { OrderID: 12346, Price: 150 }\n]"
+        },
+        {
+            "type": "MongoDB",
+            "description": "Calculate the total spending for each customer.",
+            "query": "db.customers.aggregate([ { $group: { _id: '$customer_id', totalSpent: { $sum: '$total_spent' } } } ]);",
+            "output": "[\n  { _id: 'C001', totalSpent: 5000 },\n  { _id: 'C002', totalSpent: 4500 }\n]"
+        },
+        {
+            "type": "MongoDB",
+            "description": "Find the average price of all products.",
+            "query": "db.products.aggregate([ { $group: { _id: null, avgPrice: { $avg: '$price' } } } ]);",
+            "output": "[\n  { _id: null, avgPrice: 75.5 }\n]"
+        },
+        {
+            "type": "MongoDB",
+            "description": "Count the number of orders placed by each customer.",
+            "query": "db.orders.aggregate([ { $group: { _id: '$customer_id', orderCount: { $sum: 1 } } } ]);",
+            "output": "[\n  { _id: 'C001', orderCount: 5 },\n  { _id: 'C002', orderCount: 3 }\n]"
+        },
+    ]
+
+    response = "💡 **Sample Queries and Outputs**:\n\n"
+    keyboard = [["Back to Menu"]]
+    reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True, resize_keyboard=True)
+    await update.message.reply_text(response, reply_markup=reply_markup, parse_mode="Markdown")
+
+    for i, example in enumerate(sample_queries, 1):
+        # Send the description
+        await update.message.reply_text(
+            f"**{i}. [{example['type']}]**\n\n"
+            f"**Description:** `{example['description']}`\n\n",
+            parse_mode="Markdown"
+        )
+        # Send the query
+        await update.message.reply_text(
+            f"**Query:**\n```{example['query']}```",
+            parse_mode="Markdown"
+        )
+        # Send the output
+        await update.message.reply_text(
+            f"**Output:**\n```\n{example['output']}\n```",
+            parse_mode="Markdown"
+        )
+
+    return CHOOSING
 
 async def show_sample_queries(update: Update, context: CallbackContext) -> int:
     """Show sample queries and their outputs with natural language descriptions."""
@@ -607,7 +713,7 @@ def main() -> None:
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler('start', start)],
         states={
-            CHOOSING: [
+             CHOOSING: [
                 MessageHandler(filters.Regex('^Upload Data$'), handle_upload_data),
                 MessageHandler(filters.Regex('^Query Data$'), show_data_overview),
                 MessageHandler(filters.Regex('^Sample Queries$'), show_sample_queries),
