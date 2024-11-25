@@ -12,8 +12,7 @@ logger = logging.getLogger(__name__)
 class QueryGenerator:
     def __init__(self):
         # Download required NLTK data
-        for package in ['punkt', 'averaged_perceptron_tagger', 'stopwords', 'wordnet', 'maxent_ne_chunker_tab',
-                        'words',]:
+        for package in ['punkt', 'averaged_perceptron_tagger', 'stopwords', 'wordnet']:
             try:
                 nltk.download(package, quiet=True)
             except Exception as e:
@@ -34,200 +33,144 @@ class QueryGenerator:
                 }
             },
             'from': ['from', 'in', 'within', 'of'],
-            'join': {
-                'inner': ['join', 'joined with', 'combined with', 'matching'],
-                'left': ['left join', 'including all from left', 'keeping all from'],
-                'right': ['right join', 'including all from right'],
-                'outer': ['outer join', 'full join', 'including all']
-            },
             'where': {
                 'words': ['where', 'with', 'has', 'have', 'having', 'that', 'whose', 'which'],
                 'operators': {
                     '=': ['equals', 'equal to', 'is', 'matches', 'same as'],
                     '>': ['greater than', 'more than', 'above', 'over', 'exceeds'],
                     '<': ['less than', 'lower than', 'below', 'under'],
-                    '>=': ['greater than or equal to', 'at least', 'minimum'],
-                    '<=': ['less than or equal to', 'at most', 'maximum'],
+                    '>=': ['at least', 'greater than or equal to', 'minimum'],
+                    '<=': ['at most', 'less than or equal to', 'maximum'],
                     '!=': ['not equal to', 'different from', 'not'],
                     'LIKE': ['like', 'contains', 'similar to', 'starts with', 'ends with'],
                     'IN': ['in', 'among', 'within', 'one of'],
                     'BETWEEN': ['between', 'from', 'range']
                 }
             },
-            'group_by': ['group by', 'grouped by', 'organize by', 'categorize by'],
+            'group_by': ['group by', 'grouped by', 'organize by', 'categorize by', 'per', 'by each'],
             'order_by': ['order by', 'ordered by', 'sort by', 'sorted by', 'arrange by', 'arranged by'],
             'direction': {
                 'ASC': ['ascending', 'asc', 'increasing'],
                 'DESC': ['descending', 'desc', 'decreasing', 'reverse']
-            },
-            'limit': ['limit', 'top', 'first', 'last', 'only']
+            }
         }
 
-    def _clean_text(self, text: str) -> str:
-        """Clean and normalize input text."""
-        text = text.lower().strip()
-        text = re.sub(r'\s+', ' ', text)  # Normalize whitespace
-        return text
-
-    def _clean_column_name(self, column_name: str) -> str:
+    def _extract_conditions(self, text: str) -> List[Tuple[str, str, str]]:
         """
-        Clean and format column names that might contain spaces or special characters.
-        Wraps column names with backticks if they contain spaces.
+        Extract WHERE conditions with improved natural language understanding.
         """
-        column_name = column_name.strip()
-        if ' ' in column_name:
-            return f"`{column_name}`"
-        return column_name
-
-    def _extract_aggregate_functions(self, text: str) -> List[Tuple[str, str]]:
-        """Extract aggregate functions and their target columns using NLTK."""
-        aggregates = []
-        tokens = word_tokenize(text.lower())
-        tagged = pos_tag(tokens)
+        conditions = []
+        text = text.lower()
         
-        for agg_type, phrases in self.KEYWORDS['select']['aggregates'].items():
-            for phrase in phrases:
-                if phrase in text:
-                    # Find the target column after the aggregate keyword
-                    pattern = f"{phrase}\\s+(?:of\\s+)?([\\w_]+)"
-                    match = re.search(pattern, text)
-                    if match:
-                        return (agg_type, match.group(1))
-        return None
-
-    def _extract_table_name(self, tokens: List[str]) -> Optional[str]:
-        """Extract table name from tokens."""
-        text = ' '.join(tokens)
-        # Common patterns for table references
+        # Natural language patterns for conditions
         patterns = [
-            r'from\s+([a-zA-Z_]\w*)',
-            r'in\s+([a-zA-Z_]\w*)\s+table',
-            r'from\s+the\s+([a-zA-Z_]\w*)',
-            r'in\s+([a-zA-Z_]\w*)'
+            # Which/whose patterns
+            (r'(?:which|whose|with|having)\s+(\w+)\s+(?:is|are)\s+(?:greater|more|higher|larger)\s+than\s+(\d+(?:\.\d+)?)', '>'),
+            (r'(?:which|whose|with|having)\s+(\w+)\s+(?:is|are)\s+(?:less|lower|smaller)\s+than\s+(\d+(?:\.\d+)?)', '<'),
+            (r'(?:which|whose|with|having)\s+(\w+)\s+(?:is|are)\s+at\s+least\s+(\d+(?:\.\d+)?)', '>='),
+            (r'(?:which|whose|with|having)\s+(\w+)\s+(?:is|are)\s+at\s+most\s+(\d+(?:\.\d+)?)', '<='),
+            
+            # Equality patterns
+            (r'(?:which|whose|with|having)\s+(\w+)\s+(?:is|are)\s+(?:equal\s+to|exactly)?\s+[\'"]*([^\'"\s]+)[\'"]*', '='),
+            
+            # Not equal patterns
+            (r'(?:which|whose|with|having)\s+(\w+)\s+(?:is|are)\s+not\s+[\'"]*([^\'"\s]+)[\'"]*', '!='),
+            
+            # Traditional WHERE patterns (as fallback)
+            (r'where\s+(\w+)\s*(>|<|>=|<=|=|!=)\s*(\d+(?:\.\d+)?)', None),
+            (r'where\s+(\w+)\s+equals?\s+[\'"]*([^\'"\s]+)[\'"]*', '=')
         ]
         
-        for pattern in patterns:
-            match = re.search(pattern, text)
-            if match:
-                return match.group(1)
+        # Check each pattern
+        for pattern, default_operator in patterns:
+            matches = re.finditer(pattern, text)
+            for match in matches:
+                if default_operator is None:  # For patterns that include operator
+                    field, operator, value = match.groups()
+                else:
+                    field, value = match.groups()
+                    operator = default_operator
+                    
+                # Clean up the value
+                value = value.strip("'\"")
                 
-        # Look for plural nouns that might be table names
-        tagged = pos_tag(tokens)
-        for word, tag in tagged:
-            if tag in ['NNS', 'NNPS'] and word not in self.stop_words:
-                return word
-        
-        return None
-
-    def _extract_conditions(self, tokens: List[str]) -> List[Tuple[str, str, str]]:
-        """Extract WHERE conditions from tokens."""
-        conditions = []
-        
-        # Define condition patterns
-        number_comparison_pattern = r'(\w+)\s*(>|<|>=|<=|=|!=)\s*(\d+(?:\.\d+)?)'
-        text_comparison_pattern = r'(\w+)\s+(?:is|equals|equal to)\s+[\'"]*([^\'"\s]+)[\'"]*'
-        
-        # Check for numeric comparisons
-        number_matches = re.finditer(number_comparison_pattern, text.lower())
-        for match in number_matches:
-            field, operator, value = match.groups()
-            conditions.append((field, operator, value))
-        
-        # Check for text comparisons
-        text_matches = re.finditer(text_comparison_pattern, text.lower())
-        for match in text_matches:
-            field, value = match.groups()
-            conditions.append((field, '=', value))
-
-        # Check for special operators from keywords
-        for operator_type, phrases in self.KEYWORDS['where']['operators'].items():
-            for phrase in phrases:
-                pattern = f"([\\w_]+)\\s+(?:{phrase})\\s+([\\w\\s.']+)"
-                matches = re.finditer(pattern, text.lower())
-                for match in matches:
-                    field = match.group(1)
-                    value = match.group(2).strip()
-                    
-                    # Handle special cases
-                    if operator_type == 'LIKE':
-                        value = f"%{value}%"
-                    elif operator_type == 'IN':
-                        value = f"({value.replace(' ', ', ')})"
-                    elif operator_type == 'BETWEEN':
-                        value = value.replace(' and ', ' AND ')
-                    
-                    conditions.append((field, operator_type, value))
+                # Avoid duplicate conditions
+                if (field, operator, value) not in conditions:
+                    conditions.append((field, operator, value))
         
         return conditions
 
-    def _extract_order_by(self, text: str) -> Optional[Tuple[str, str]]:
-        """Extract ORDER BY clause using NLTK."""
+    def _extract_aggregate_functions(self, text: str) -> List[Tuple[str, str, str]]:
+        """
+        Extract aggregate functions with improved natural language understanding.
+        Returns list of (function, field, alias) tuples.
+        """
+        aggregates = []
         text = text.lower()
         
-        # Check for ordering keywords
-        order_pattern = r'order(?:ed)?\s+by\s+([\w\s]+?)(?:\s+(desc|asc|descending|ascending))?(?:\s|$)'
-        match = re.search(order_pattern, text, re.IGNORECASE)
-        
-        if match:
-            field = match.group(1).strip()
-            direction = match.group(2).upper() if match.group(2) else 'ASC'
+        # Natural language patterns for aggregates
+        patterns = [
+            # Count patterns
+            (r'(?:count|number|how\s+many)\s+(?:of\s+)?(\w+)', 'COUNT'),
             
-            # Normalize direction
-            if direction.startswith('DESC'):
-                direction = 'DESC'
-            elif direction.startswith('ASC'):
-                direction = 'ASC'
+            # Sum patterns
+            (r'(?:sum|total|add\s+up)\s+(?:of\s+)?(\w+)', 'SUM'),
+            
+            # Average patterns
+            (r'(?:average|mean|avg)\s+(?:of\s+)?(\w+)', 'AVG'),
+            
+            # Max/Min patterns
+            (r'(?:maximum|highest|max|biggest|largest)\s+(?:of\s+)?(\w+)', 'MAX'),
+            (r'(?:minimum|lowest|min|smallest)\s+(?:of\s+)?(\w+)', 'MIN')
+        ]
+        
+        for pattern, func in patterns:
+            matches = re.finditer(pattern, text)
+            for match in matches:
+                field = match.group(1)
+                alias = f"{func.lower()}_{field}"
+                aggregates.append((func, field, alias))
                 
-            return (field, direction)
+        return aggregates
+
+    def _extract_table_name(self, text: str, available_tables: List[str]) -> str:
+        """Find table name in text and verify against available tables."""
+        text = text.lower()
+        tables_lower = [t.lower() for t in available_tables]
         
-        # Check for alternative sorting patterns
-        sort_pattern = r'sort(?:ed)?\s+by\s+([\w\s]+?)(?:\s+(desc|asc|descending|ascending))?(?:\s|$)'
-        match = re.search(sort_pattern, text, re.IGNORECASE)
+        # Direct match in available tables
+        for table in available_tables:
+            if table.lower() in text:
+                return table
         
-        if match:
-            field = match.group(1).strip()
-            direction = match.group(2).upper() if match.group(2) else 'ASC'
-            
-            # Normalize direction
-            if direction.startswith('DESC'):
-                direction = 'DESC'
-            elif direction.startswith('ASC'):
-                direction = 'ASC'
-                
-            return (field, direction)
-            
+        # Look for table name after FROM/IN
+        for keyword in ['from', 'in']:
+            pattern = f"{keyword}\\s+([\\w_]+)"
+            match = re.search(pattern, text)
+            if match and match.group(1).lower() in tables_lower:
+                return match.group(1)
+        
+        # If no match found, return None
         return None
 
-    def _extract_group_by(self, tokens: List[str]) -> List[str]:
-        """Extract GROUP BY fields."""
-        text = ' '.join(tokens)
-        group_by_fields = []
-        for group_keyword in self.KEYWORDS['group']:
-            pattern = f"{group_keyword}\\s+([\\w_,\\s]+)"
-            match = re.search(pattern, text)
-            if match:
-                fields = match.group(1).split(',')
-                group_by_fields.extend([f.strip() for f in fields])
-        return group_by_fields
-
-    def _extract_limit(self, tokens: List[str]) -> Optional[int]:
-        """Extract LIMIT value."""
-        text = ' '.join(tokens)
-        for limit_keyword in self.KEYWORDS['limit']:
-            pattern = f"{limit_keyword}\\s+(\\d+)"
-            match = re.search(pattern, text)
-            if match:
-                return int(match.group(1))
+    def _extract_order_by(self, text: str) -> Optional[Tuple[str, str]]:
+        """Extract ORDER BY clause with improved handling."""
+        text = text.lower()
+        
+        # Check for ordering keywords with direction
+        order_pattern = r'(?:order|sort|arrange)(?:ed)?\s+by\s+([\w\s]+?)(?:\s+(desc|asc|descending|ascending))?(?:\s|$)'
+        match = re.search(order_pattern, text)
+        
+        if match:
+            field = match.group(1).strip()
+            direction = 'DESC' if match.group(2) and match.group(2).startswith('desc') else 'ASC'
+            return (field, direction)
+            
         return None
 
     def extract_query_components(self, text: str, available_tables: List[str]) -> Dict[str, Any]:
-        """
-        Extract all query components with improved WHERE clause handling.
-        """
+        """Extract all query components with improved natural language processing."""
         text = self._clean_text(text)
-        tokens = word_tokenize(text)
-        tagged = pos_tag(tokens)
-        
         components = {
             'select': ['*'],
             'from': None,
@@ -238,67 +181,90 @@ class QueryGenerator:
             'aggregates': []
         }
 
-        # Handle various query patterns
-        patterns = [
-            # "show all _id in country" or "show all _id from country"
-            r'^show\s+all\s+(\w+)(?:\s+in|\s+from)\s+(\w+)$',
-            # "find all cars"
-            r'^find\s+all\s+(\w+)$',
-            # "cars find all"
-            r'^(\w+)\s+find\s+all$',
-            # Simple name
-            r'^(\w+)$'
+        # Extract table name
+        components['from'] = self._extract_table_name(text, available_tables)
+
+        # Handle aggregate functions
+        aggregates = self._extract_aggregate_functions(text)
+        if aggregates:
+            components['aggregates'] = aggregates
+            # If we have aggregates, don't select all columns
+            if components['select'] == ['*']:
+                components['select'] = []
+
+        # Handle column selection
+        select_pattern = r'(?:show|get|find|display|select)\s+([\w\s,]+)\s+(?:from|in)\s+(\w+)'
+        select_match = re.search(select_pattern, text, re.IGNORECASE)
+        
+        if select_match and not aggregates:  # Only if no aggregates found
+            columns_str = select_match.group(1)
+            columns = []
+            
+            # Split by comma and 'and'
+            for part in columns_str.split(','):
+                if ' and ' in part:
+                    columns.extend([col.strip() for col in part.split(' and ')])
+                else:
+                    columns.append(part.strip())
+                    
+            # Clean up columns
+            columns = [col for col in columns if col and col != '*']
+            if columns:
+                components['select'] = columns
+
+        # Extract WHERE conditions
+        conditions = self._extract_conditions(text)
+        if conditions:
+            components['where'] = conditions
+
+        # Handle GROUP BY
+        group_patterns = [
+            r'group(?:ed)?\s+by\s+([\w\s,]+)',
+            r'by\s+each\s+([\w\s,]+)',
+            r'per\s+([\w\s,]+)'
         ]
-
-        for pattern in patterns:
-            match = re.match(pattern, cleaned_text)
+        
+        for pattern in group_patterns:
+            match = re.search(pattern, text, re.IGNORECASE)
             if match:
-                logger.info(f"Matched pattern: {pattern}")
-                logger.info(f"Match groups: {match.groups()}")
-                
-                if pattern.endswith('(\w+)$'):  # Simple name pattern
-                    components['from'] = match.group(1)
-                    break
-                elif 'in' in pattern or 'from' in pattern:
-                    field = match.group(1)
-                    table = match.group(2)
-                    components['select'] = [field]
-                    components['from'] = table
-                    break
-                else:  # "find all" patterns
-                    table = match.group(1)
-                    components['from'] = table
-                    break
+                groups = [g.strip() for g in match.group(1).split(',')]
+                components['group_by'] = groups
+                break
 
-        # If no pattern matched, try original parsing
-        if not components['from']:
-            # Extract components as before
-            aggregate_info = self._identify_aggregate_function(tokens)
-            if aggregate_info:
-                components['aggregate'] = aggregate_info
-                components['select'] = [f"{aggregate_info[0]}({aggregate_info[1]})"]
+        # Handle ORDER BY
+        order_by = self._extract_order_by(text)
+        if order_by:
+            components['order_by'] = order_by
 
-            components['from'] = self._extract_table_name(tokens)
-            components['where'] = self._extract_conditions(tokens)
-            components['order_by'] = self._extract_order_by(tokens)
-            components['group_by'] = self._extract_group_by(tokens)
-            components['limit'] = self._extract_limit(tokens)
+        # Handle LIMIT/TOP N
+        top_n_pattern = r'(?:top|first|last)\s+(\d+)(?:\s+(?:rows?|records?|results?|entries?|lines?))?'
+        top_n_match = re.search(top_n_pattern, text, re.IGNORECASE)
+        if top_n_match:
+            components['limit'] = int(top_n_match.group(1))
 
-        logger.info(f"Generated components: {components}")
         return components
 
     def generate_sql_query(self, components: Dict[str, Any]) -> str:
-        """Generate SQL query from components with improved WHERE clause handling."""
-        # Handle SELECT clause
-        if not components['select'] or components['select'] == ['*']:
+        """Generate SQL query from components."""
+        # Handle SELECT clause with aggregates
+        select_parts = []
+        
+        # Add aggregate functions
+        for func, field, alias in components.get('aggregates', []):
+            select_parts.append(f"{func}({field}) AS {alias}")
+        
+        # Add normal columns
+        if components['select'] and components['select'] != ['*']:
+            select_parts.extend(self._clean_column_name(col) for col in components['select'])
+        
+        # If no columns specified and no aggregates, select all
+        if not select_parts:
             select_clause = "SELECT *"
         else:
-            select_clause = f"SELECT {', '.join(self._clean_column_name(col) for col in components['select'])}"
+            select_clause = f"SELECT {', '.join(select_parts)}"
 
         # Handle FROM clause
-        if not components['from']:
-            raise ValueError("No table name specified")
-        from_clause = f"FROM {components['from']}"
+        from_clause = f"FROM {components['from']}" if components['from'] else ""
 
         # Handle WHERE clause
         where_clause = ""
@@ -309,8 +275,12 @@ class QueryGenerator:
                     conditions.append(f"{self._clean_column_name(field)} {operator} {value}")
                 else:
                     conditions.append(f"{self._clean_column_name(field)} {operator} '{value}'")
-            if conditions:
-                where_clause = "WHERE " + " AND ".join(conditions)
+            where_clause = "WHERE " + " AND ".join(conditions)
+
+        # Handle GROUP BY clause
+        group_clause = ""
+        if components['group_by']:
+            group_clause = "GROUP BY " + ", ".join(self._clean_column_name(field) for field in components['group_by'])
 
         # Handle ORDER BY clause
         order_clause = ""
@@ -326,6 +296,7 @@ class QueryGenerator:
             select_clause,
             from_clause,
             where_clause,
+            group_clause,
             order_clause,
             limit_clause
         ]
@@ -334,6 +305,9 @@ class QueryGenerator:
         query = " ".join(part for part in query_parts if part)
         return query.strip()
 
+    def _clean_text(self, text: str) -> str:
+        """Clean and normalize input text."""
+        return text.lower().strip()
 
     def _clean_column_name(self, column_name: str) -> str:
         """Clean and format column names."""
@@ -341,3 +315,4 @@ class QueryGenerator:
         if ' ' in column_name:
             return f"`{column_name}`"
         return column_name
+    
