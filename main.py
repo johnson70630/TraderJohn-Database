@@ -55,7 +55,7 @@ async def start(update: Update, context: CallbackContext) -> int:
     """Start the conversation and show main menu."""
     keyboard = [
         ["Upload Data", "Query Data"],
-        ["Sample Queries", "Help", "Exit"]
+        ["Sample Queries", "Exit"]
     ]
     reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True, resize_keyboard=True)
     
@@ -82,36 +82,6 @@ async def start(update: Update, context: CallbackContext) -> int:
     )
     
     await update.message.reply_text(welcome_message, reply_markup=reply_markup, parse_mode="Markdown")
-    return CHOOSING
-
-async def help_command(update: Update, context: CallbackContext) -> int:
-    """Show help information."""
-    help_text = (
-        "🔍 **Query Examples**:\n\n"
-        "1. Basic Queries:\n"
-        "   • 'Show all users'\n"
-        "   • 'Display products'\n\n"
-        
-        "2. Filtered Queries:\n"
-        "   • 'Find orders where total > 1000'\n"
-        "   • 'Show users where country is USA'\n\n"
-        
-        "3. Aggregations:\n"
-        "   • 'Calculate average order total'\n"
-        "   • 'Count orders by status'\n"
-        "   • 'Sum sales by product'\n\n"
-        
-        "4. Sorting:\n"
-        "   • 'Show top 10 customers by spend'\n"
-        "   • 'List products ordered by price desc'\n\n"
-        
-        "5. Data Upload:\n"
-        "   • CSV files go to MySQL tables\n"
-        "   • JSON files go to MongoDB collections\n\n"
-        
-        "Use /start to return to main menu"
-    )
-    await update.message.reply_text(help_text, parse_mode="Markdown")
     return CHOOSING
 
 async def handle_upload_data(update: Update, context: CallbackContext) -> int:
@@ -577,7 +547,6 @@ def main() -> None:
                 MessageHandler(filters.Regex('^Upload Data$'), handle_upload_data),
                 MessageHandler(filters.Regex('^Query Data$'), show_data_overview),
                 MessageHandler(filters.Regex('^Sample Queries$'), show_sample_queries),
-                MessageHandler(filters.Regex('^Help$'), help_command),
                 MessageHandler(filters.Regex('^Exit$'), cancel),
                 MessageHandler(filters.Regex('^Back to Menu$'), start),
                 CommandHandler('start', start),
@@ -604,7 +573,6 @@ def main() -> None:
         },
         fallbacks=[
             CommandHandler('cancel', cancel),
-            CommandHandler('help', help_command),
         ],
     )
     
