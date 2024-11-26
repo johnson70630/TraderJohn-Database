@@ -6,7 +6,7 @@ import logging
 
 class QueryGenerator:
     def __init__(self):
-        """Initialize the Query Generator with basic NLP capabilities"""
+        """Initialize the Query Generator with enhanced pattern matching"""
         try:
             nltk.download('punkt', quiet=True)
             nltk.download('stopwords', quiet=True)
@@ -15,54 +15,94 @@ class QueryGenerator:
 
         self.stop_words = set(stopwords.words('english'))
         
+        self.sort_patterns = {
+            'ASC': [
+                r'ascending',
+                r'asc',
+                r'increasing',
+                r'growing',
+                r'smaller\s+to\s+larger',
+                r'lowest\s+to\s+highest'
+            ],
+            'DESC': [
+                r'descending',
+                r'desc',
+                r'decreasing',
+                r'declining',
+                r'larger\s+to\s+smaller',
+                r'highest\s+to\s+lowest'
+            ]
+        }
+        
+        self.condition_patterns = {
+            'equals': ('=', [
+                r'([a-zA-Z_]\w*)\s+(?:is|equals|equal\s+to|=|identical\s+to|matches|same\s+as)\s+[\'"]*([^\'"\s]+)[\'"]*',
+                r'whose\s+([a-zA-Z_]\w*)\s+(?:is|equals|matches)\s+[\'"]*([^\'"\s]+)[\'"]*',
+                r'([a-zA-Z_]\w*)\s+(?:with\s+value|value)\s+[\'"]*([^\'"\s]+)[\'"]*'
+            ]),
+            'greater': ('>', [
+                r'([a-zA-Z_]\w*)\s*(?:>|greater\s+than|more\s+than|larger\s+than|bigger\s+than|higher\s+than|exceeds|above|over)\s*(\d*\.?\d*)',
+                r'([a-zA-Z_]\w*)\s+(?:exceeding|greater|more|larger|bigger|higher)\s+than\s*(\d*\.?\d*)',
+                r'([a-zA-Z_]\w*)\s+at\s+least\s*(\d*\.?\d*)'
+            ]),
+            'less': ('<', [
+                r'([a-zA-Z_]\w*)\s*(?:<|less\s+than|smaller\s+than|lower\s+than|under|below)\s*(\d*\.?\d*)',
+                r'([a-zA-Z_]\w*)\s+(?:not\s+exceeding|not\s+more\s+than|at\s+most)\s*(\d*\.?\d*)',
+                r'([a-zA-Z_]\w*)\s+(?:within|under|below)\s*(\d*\.?\d*)'
+            ]),
+            'not_equals': ('!=', [
+                r'([a-zA-Z_]\w*)\s+(?:not|!=|differs\s+from|different\s+from)\s+(?:equal\s+to|equals|=)\s+[\'"]*([^\'"\s]+)[\'"]*',
+                r'([a-zA-Z_]\w*)\s+(?:is\s+not|isnt|is\s+different\s+from)\s+[\'"]*([^\'"\s]+)[\'"]*',
+                r'([a-zA-Z_]\w*)\s+(?:excluding|except|other\s+than)\s+[\'"]*([^\'"\s]+)[\'"]*'
+            ])
+        }
+        
         self.agg_patterns = {
             ('MAX', 'max_'): [
-                r'(?:find|get|show)\s+(?:the\s+)?maximum\s+(\w+)',
-                r'highest\s+(\w+)',
-                r'max\s+(\w+)'
+                r'(?:find|get|show)\s+(?:the\s+)?(?:maximum|highest|largest|biggest|greatest|peak)\s+([a-zA-Z_]\w*)',
+                r'(?:highest|largest|biggest|maximum|greatest|peak)\s+([a-zA-Z_]\w*)',
+                r'max\s+([a-zA-Z_]\w*)'
             ],
             ('MIN', 'min_'): [
-                r'(?:find|get|show)\s+(?:the\s+)?minimum\s+(\w+)',
-                r'lowest\s+(\w+)',
-                r'min\s+(\w+)'
+                r'(?:find|get|show)\s+(?:the\s+)?(?:minimum|lowest|smallest|least|bottom)\s+([a-zA-Z_]\w*)',
+                r'(?:lowest|smallest|minimum|least|bottom)\s+([a-zA-Z_]\w*)',
+                r'min\s+([a-zA-Z_]\w*)'
             ],
             ('AVG', 'avg_'): [
-                r'(?:find|get|show)\s+(?:the\s+)?average\s+(\w+)',
-                r'mean\s+(\w+)',
-                r'avg\s+(\w+)'
+                r'(?:find|get|show)\s+(?:the\s+)?(?:average|mean|typical|expected)\s+([a-zA-Z_]\w*)',
+                r'(?:mean|average|typical|expected)\s+([a-zA-Z_]\w*)',
+                r'avg\s+([a-zA-Z_]\w*)'
             ],
             ('SUM', 'sum_'): [
-                r'(?:find|get|show)\s+(?:the\s+)?(?:sum|total)\s+(?:of\s+)?(\w+)',
-                r'total\s+(\w+)'
+                r'(?:find|get|show)\s+(?:the\s+)?(?:sum|total|aggregate)\s+(?:of\s+)?([a-zA-Z_]\w*)',
+                r'(?:total|sum|aggregate)\s+([a-zA-Z_]\w*)',
+                r'sum\s+up\s+([a-zA-Z_]\w*)'
             ],
             ('COUNT', 'count_'): [
-                r'count\s+(?:the\s+)?(?:total\s+)?(\w+)',
-                r'how\s+many\s+(\w+)'
+                r'count\s+(?:the\s+)?(?:total\s+)?(?:number\s+of\s+)?([a-zA-Z_]\w*)',
+                r'how\s+many\s+([a-zA-Z_]\w*)',
+                r'number\s+of\s+([a-zA-Z_]\w*)',
+                r'quantity\s+of\s+([a-zA-Z_]\w*)'
             ]
         }
 
-        self.condition_patterns = {
-            'equals': ('=', [
-                r'(\w+)\s+(?:is|equals|equal\s+to|=)\s+[\'"]*([^\'"\s]+)[\'"]*',
-                r'whose\s+(\w+)\s+is\s+[\'"]*([^\'"\s]+)[\'"]*'
-            ]),
-            'greater': ('>', [
-                r'(\w+)\s*(?:>|greater\s+than|more\s+than)\s*(\d*\.?\d*)',
-                r'(\w+)\s+above\s*(\d*\.?\d*)'
-            ]),
-            'less': ('<', [
-                r'(\w+)\s*(?:<|less\s+than|smaller\s+than)\s*(\d*\.?\d*)',
-                r'(\w+)\s+below\s*(\d*\.?\d*)'
-            ]),
-            'not_equals': ('!=', [
-                r'(\w+)\s+(?:not|!=)\s+(?:equal\s+to|equals|=)\s+[\'"]*([^\'"\s]+)[\'"]*',
-                r'(\w+)\s+is\s+not\s+[\'"]*([^\'"\s]+)[\'"]*'
-            ])
-        }
-
+        self.group_patterns = [
+            r'grouped?\s+by\s+([a-zA-Z_]\w*)',
+            r'group\s+(?:by|on|using)\s+([a-zA-Z_]\w*)',
+            r'categorize(?:d)?\s+by\s+([a-zA-Z_]\w*)',
+            r'organize(?:d)?\s+by\s+([a-zA-Z_]\w*)',
+            r'split\s+by\s+([a-zA-Z_]\w*)',
+            r'partition(?:ed)?\s+by\s+([a-zA-Z_]\w*)',
+            r'(?:records|data|documents|results)\s+by\s+([a-zA-Z_]\w*)'  # Added new pattern
+        ]
+        
     def extract_query_components(self, text: str, available_tables: List[str]) -> Dict[str, Any]:
         """Extract query components from natural language text."""
+        # Store original text for field name extraction
+        original_text = text
+        # Convert to lower case for keyword matching only
         text = text.lower()
+        
         components = {
             'select': ['*'],
             'from': None,
@@ -74,82 +114,103 @@ class QueryGenerator:
             'limit': None
         }
         
-        # 1. Extract table name
+        # Extract table name using lowercase text
         components['from'] = self._extract_table_name(text, available_tables)
         if not components['from']:
             return components
             
-        # 2. Handle COUNT queries first
+         # Extract table name
+        components['from'] = self._extract_table_name(text, available_tables)
+        if not components['from']:
+            return components
+            
+        # Check for GROUP BY with enhanced patterns
+        for pattern in self.group_patterns:
+            group_match = re.search(pattern, original_text)
+            if group_match:
+                group_field = group_match.group(1)  # Keep original case
+                components['group_by'].append(group_field)
+                
+                if 'count' in text:
+                    components['select'] = [group_field]
+                    components['aggregates'] = [('COUNT', '*', 'count_total')]
+                    
+                    # Check for ORDER BY after GROUP BY
+                    order_match = re.search(r'(?:order|sort)\s+by\s+([a-zA-Z_]\w*)(?:\s+(desc|asc|descending|ascending))?', text, re.IGNORECASE)
+                    if order_match:
+                        field = order_match.group(1)
+                        direction = self._parse_sort_direction(order_match.group(2) if order_match.group(2) else '')
+                        components['order_by'] = (field, direction)
+                    
+                    return components
+                break
+            
+        # Handle regular COUNT queries
         if 'count' in text:
             components['aggregates'] = [('COUNT', '*', 'count_total')]
             components['select'] = []
-            components['where'] = self._extract_conditions(text)
+            components['where'] = self._extract_conditions(original_text)
             return components
             
-        # 3. Check HAVING patterns
+        # Check HAVING patterns
         if 'having' in text:
-            match = re.search(r'(\w+)\s+having\s+(?:average|avg)\s+(\w+)\s*(>|<|=)\s*(\d+)', text)
+            # Use case-sensitive matching for field names
+            match = re.search(r'([a-zA-Z_]\w*)\s+having\s+(?:average|avg)\s+([a-zA-Z_]\w*)\s*(>|<|=)\s*(\d+)', original_text)
             if match:
-                group_field, agg_field, op, value = match.groups()
+                group_field, agg_field = match.group(1), match.group(2)  # Keep original case
+                op, value = match.group(3), match.group(4)
                 components['select'] = [group_field]
                 components['group_by'] = [group_field]
                 components['having'] = [(f"AVG({agg_field})", op, value)]
                 
-                # Check for order by in having clause
+                # Check for order by
                 if 'order by' in text:
-                    order_match = re.search(r'order\s+by\s+(\w+)(?:\s+(desc|asc))?', text)
+                    order_match = re.search(r'order\s+by\s+([a-zA-Z_]\w*)(?:\s+(desc|asc))?', original_text)
                     if order_match:
-                        field = order_match.group(1)
+                        field = order_match.group(1)  # Keep original case
                         direction = order_match.group(2).upper() if order_match.group(2) else 'ASC'
                         components['order_by'] = (field, direction)
                 
                 return components
         
-        # 4. Check for TOP N queries
-        if 'top' in text:
-            components['limit'] = self._extract_limit(text)
-            # Don't include 'top N' in the SELECT clause
-            if components['select'] == ['*']:
-                components['select'] = ['*']
-        
-        # 5. Extract columns for non-COUNT queries
+        # Extract columns
         if not components['aggregates']:
-            cols = self._extract_columns(text)
+            cols = self._extract_columns(original_text)  # Use original text
             if cols:
                 components['select'] = cols
                 
-        # 6. Extract conditions
-        components['where'] = self._extract_conditions(text)
+        # Extract conditions using original text for field names
+        components['where'] = self._extract_conditions(original_text)
         
-        # 7. Extract ORDER BY
+        # Extract ORDER BY using original text for field names
         if any(word in text for word in ['order by', 'sort by']):
-            order_match = re.search(r'(?:order|sort)\s+by\s+(\w+)(?:\s+(desc|asc))?', text)
+            order_match = re.search(r'(?:order|sort)\s+by\s+([a-zA-Z_]\w*)(?:\s+(desc|asc))?', original_text)
             if order_match:
-                field = order_match.group(1)
+                field = order_match.group(1)  # Keep original case
                 direction = order_match.group(2).upper() if order_match.group(2) else 'ASC'
                 components['order_by'] = (field, direction)
                 
         return components
     
     def _extract_columns(self, text: str) -> List[str]:
-        """Extract column names with improved pattern matching."""
+        """Extract column names preserving case."""
         # Don't extract columns if just "show cars" or "find cars"
-        if re.match(r'(?:show|find|display|get)\s+(?:all\s+)?cars\b', text):
+        if re.match(r'(?i)(?:show|find|display|get)\s+(?:all\s+)?cars\b', text):
             return ['*']
         
         # Replace 'and' with comma for column lists
-        text = text.replace(' and ', ', ')
+        text = re.sub(r'(?i)\s+and\s+', ', ', text)
         
         patterns = [
-            r'(?:find|show|select|get|display)\s+([\w\s,]+?)(?:\s+from|\s+in|\s+where|\s+order|\s+$)',
-            r'(?:calculate|compute)\s+([\w\s,]+?)(?:\s+from|\s+in|\s+where|\s+$)',
+            r'(?i)(?:find|show|select|get|display)\s+([a-zA-Z_]\w*(?:\s*,\s*[a-zA-Z_]\w*)*?)(?:\s+from|\s+in|\s+where|\s+order|\s+$)',
+            r'(?i)(?:calculate|compute)\s+([a-zA-Z_]\w*(?:\s*,\s*[a-zA-Z_]\w*)*?)(?:\s+from|\s+in|\s+where|\s+$)',
         ]
         
         for pattern in patterns:
             match = re.search(pattern, text)
             if match:
                 cols = match.group(1).strip().split(',')
-                cleaned_cols = [col.strip() for col in cols if col.strip() and col.strip() != '*' and col.strip() != 'cars']
+                cleaned_cols = [col.strip() for col in cols if col.strip() and col.strip() != '*' and col.strip().lower() != 'cars']
                 if cleaned_cols:
                     return cleaned_cols
         
@@ -157,45 +218,33 @@ class QueryGenerator:
 
     
     def _extract_conditions(self, text: str) -> List[Tuple[str, str, str]]:
-        """Extract WHERE conditions with improved pattern matching."""
+        """Extract WHERE conditions preserving field name case."""
         conditions = []
         
-        # Split by AND
-        subconditions = re.split(r'\s+and\s+', text)
+        # Split by AND (case insensitive)
+        subconditions = re.split(r'(?i)\s+and\s+', text)
         
         for subtext in subconditions:
             # Check between pattern first
-            between_match = re.search(r'(\w+)\s+between\s+(\d+)\s+and\s+(\d+)', subtext)
+            between_match = re.search(r'([a-zA-Z_]\w*)\s+between\s+(\d+)\s+and\s+(\d+)', subtext)
             if between_match:
-                field, low, high = between_match.groups()
+                field = between_match.group(1)  # Keep original case
+                low, high = between_match.group(2), between_match.group(3)
                 conditions.extend([
                     (field, '>=', low),
                     (field, '<=', high)
                 ])
                 continue
                 
-            # Check equals/not equals patterns
-            eq_match = re.search(r'(\w+)\s+(?:is\s+|=\s*)(?:not\s+)?[\'"]?(\w+)[\'"]?', subtext)
-            if eq_match:
-                field, value = eq_match.groups()
-                operator = '!=' if 'not' in subtext else '='
-                if field != 'top':  # Skip if it's a TOP N query
-                    conditions.append((field, operator, value))
-                continue
-                
-            # Check greater/less than
-            compare_patterns = [
-                (r'(\w+)\s*(?:>|greater\s+than|more\s+than)\s*(\d*\.?\d*)', '>'),
-                (r'(\w+)\s*(?:<|less\s+than|smaller\s+than)\s*(\d*\.?\d*)', '<'),
-                (r'(\w+)\s*(?:>=|greater\s+than\s+or\s+equal\s+to)\s*(\d*\.?\d*)', '>='),
-                (r'(\w+)\s*(?:<=|less\s+than\s+or\s+equal\s+to)\s*(\d*\.?\d*)', '<=')
-            ]               
-            
-            for pattern, operator in compare_patterns:
-                match = re.search(pattern, subtext)
-                if match:
-                    conditions.append((match.group(1), operator, match.group(2)))
-                    break
+            # Check other conditions
+            for op_type, (op_symbol, patterns) in self.condition_patterns.items():
+                for pattern in patterns:
+                    match = re.search(pattern, subtext)
+                    if match:
+                        field = match.group(1)  # Keep original case
+                        value = match.group(2)
+                        conditions.append((field, op_symbol, value))
+                        break
                     
         return conditions
     
@@ -251,7 +300,12 @@ class QueryGenerator:
         # SELECT clause
         if components['aggregates']:
             agg_type, field, alias = components['aggregates'][0]
-            parts.append(f"SELECT {agg_type}({field}) AS {alias}")
+            if components['group_by']:
+                # If we have GROUP BY, include both group field and aggregate
+                group_fields = ', '.join(components['group_by'])
+                parts.append(f"SELECT {group_fields}, {agg_type}({field}) AS {alias}")
+            else:
+                parts.append(f"SELECT {agg_type}({field}) AS {alias}")
         else:
             parts.append(f"SELECT {', '.join(components['select'])}")
             
@@ -290,3 +344,20 @@ class QueryGenerator:
             parts.append(f"LIMIT {components['limit']}")
             
         return " ".join(parts)
+    
+    def _parse_sort_direction(self, text: str) -> str:
+        """Enhanced sort direction parsing with more patterns"""
+        text = text.lower().strip()
+        
+        # Check DESC patterns first
+        for desc_pattern in self.sort_patterns['DESC']:
+            if re.search(desc_pattern, text, re.IGNORECASE):
+                return 'DESC'
+        
+        # Check ASC patterns
+        for asc_pattern in self.sort_patterns['ASC']:
+            if re.search(asc_pattern, text, re.IGNORECASE):
+                return 'ASC'
+        
+        # Default to ASC if no match
+        return 'ASC'
