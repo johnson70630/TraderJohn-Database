@@ -15,6 +15,7 @@ from utils.mongodb_query_generator import MongoDBQueryGenerator
 from utils.execute_query import QueryExecutor
 from utils.format import format_nested_fields
 from utils.samples import get_sample_data, get_sample_queries
+from utils.query_processer import process_mongodb_results
 
 from typing import Dict, List, Any
 
@@ -265,7 +266,6 @@ async def show_data_overview(update: Update, context: CallbackContext) -> int:
         )
         return CHOOSING
     
-
 async def handle_database_selection(update: Update, context: CallbackContext) -> int:
     """Handle database type selection for querying."""
     try:
@@ -395,7 +395,8 @@ async def handle_query(update: Update, context: CallbackContext) -> int:
                     return QUERY_DATA
 
                 # Process results in smaller chunks
-                await process_and_send_results(update, results)
+                reply_message = process_mongodb_results(results)
+                await update.message.reply_text(reply_message[0], parse_mode="Markdown")
 
             except Exception as e:
                 logger.error(f"MongoDB execution error: {str(e)}")

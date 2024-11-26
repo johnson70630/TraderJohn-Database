@@ -119,7 +119,7 @@ class QueryGenerator:
         if not components['from']:
             return components
             
-         # Extract table name
+        # Extract table name
         components['from'] = self._extract_table_name(text, available_tables)
         if not components['from']:
             return components
