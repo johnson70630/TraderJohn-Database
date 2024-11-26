@@ -3,6 +3,8 @@ from contextlib import contextmanager
 from mysql.connector import connect, Error as MySQLError
 from pymongo import MongoClient
 from pymongo.errors import PyMongoError
+from .mongodb_query_generator import MongoDBQueryGenerator
+
 import logging
 
 class QueryExecutor:
@@ -19,6 +21,7 @@ class QueryExecutor:
         self.mongodb_url = mongodb_url
         self.mongodb_name = mongodb_name
         self.logger = logging.getLogger(__name__)
+        self.mongodb_query_generator = MongoDBQueryGenerator()
 
     @contextmanager
     def _mysql_connection(self):
@@ -75,41 +78,43 @@ class QueryExecutor:
     def execute_mongodb_query(
         self, 
         collection_name: str, 
-        pipeline: Union[Dict[str, Any], List[Dict[str, Any]]],
+        query: Dict[str, Any],
         batch_size: int = 1000
     ) -> List[Dict[str, Any]]:
-        """
-        Execute MongoDB query and return results
-        
-        Args:
-            collection_name: Collection name
-            pipeline: Query or aggregation pipeline
-            batch_size: Batch size for query results
-            
-        Returns:
-            List of query results
-            
-        Raises:
-            PyMongoError: When MongoDB query execution fails
-        """
         try:
             with self._mongodb_connection() as client:
                 db = client[self.mongodb_name]
                 collection = db[collection_name]
 
-                if isinstance(pipeline, list):
+                if 'aggregate' in query:
                     cursor = collection.aggregate(
-                        pipeline,
+                        query['aggregate'],
                         allowDiskUse=True,
                         batchSize=batch_size
                     )
                 else:
+                    filter_query = query.get('filter', {})
+                    projection = query.get('projection')
+                    sort = query.get('sort')
+                    limit = query.get('limit')
+                    
                     cursor = collection.find(
-                        pipeline.get('find', {}),
+                        filter_query,
+                        projection=projection,
                         batch_size=batch_size
                     )
+                    
+                    if sort:
+                        if isinstance(sort, list):
+                            cursor = cursor.sort(sort)
+                        else:
+                            cursor = cursor.sort(list(sort.items()))
+                        
+                    if limit:
+                        cursor = cursor.limit(limit)
 
                 return list(cursor)
+            
         except PyMongoError as e:
             self.logger.error(f"Error executing MongoDB query: {str(e)}")
             raise

@@ -823,6 +823,21 @@ pymysql = ["pymysql"]
 sqlcipher = ["sqlcipher3_binary"]
 
 [[package]]
+name = "sqlparse"
+version = "0.5.2"
+description = "A non-validating SQL parser."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "sqlparse-0.5.2-py3-none-any.whl", hash = "sha256:e99bc85c78160918c3e1d9230834ab8d80fc06c59d03f8db2618f65f65dda55e"},
+    {file = "sqlparse-0.5.2.tar.gz", hash = "sha256:9e37b35e16d1cc652a2545f0997c1deb23ea28fa1f3eefe609eee3063c3b105f"},
+]
+
+[package.extras]
+dev = ["build", "hatch"]
+doc = ["sphinx"]
+
+[[package]]
 name = "tqdm"
 version = "4.67.0"
 description = "Fast, Extensible Progress Meter"
@@ -868,4 +883,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "957c5a93e862142f4a6e85b7a57067dc2d340b231449c3bc9740ac0448dd0ec2"
+content-hash = "14ea5280fd6f725fad39cb6fea9634b493582418838dd85fcb940b0f058ffed7"

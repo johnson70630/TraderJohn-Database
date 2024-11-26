@@ -47,12 +47,12 @@ class QueryGenerator:
                 r'whose\s+(\w+)\s+is\s+[\'"]*([^\'"\s]+)[\'"]*'
             ]),
             'greater': ('>', [
-                r'(\w+)\s+(?:greater|more|higher|bigger|>)\s+than\s+(\d+)',
-                r'(\w+)\s+above\s+(\d+)'
+                r'(\w+)\s*(?:>|greater\s+than|more\s+than)\s*(\d*\.?\d*)',
+                r'(\w+)\s+above\s*(\d*\.?\d*)'
             ]),
             'less': ('<', [
-                r'(\w+)\s+(?:less|lower|smaller|<)\s+than\s+(\d+)',
-                r'(\w+)\s+below\s+(\d+)'
+                r'(\w+)\s*(?:<|less\s+than|smaller\s+than)\s*(\d*\.?\d*)',
+                r'(\w+)\s+below\s*(\d*\.?\d*)'
             ]),
             'not_equals': ('!=', [
                 r'(\w+)\s+(?:not|!=)\s+(?:equal\s+to|equals|=)\s+[\'"]*([^\'"\s]+)[\'"]*',
@@ -185,11 +185,11 @@ class QueryGenerator:
                 
             # Check greater/less than
             compare_patterns = [
-                (r'(\w+)\s*(?:>|greater\s+than|more\s+than)\s*(\d+)', '>'),
-                (r'(\w+)\s*(?:<|less\s+than|smaller\s+than)\s*(\d+)', '<'),
-                (r'(\w+)\s*(?:>=|greater\s+than\s+or\s+equal\s+to)\s*(\d+)', '>='),
-                (r'(\w+)\s*(?:<=|less\s+than\s+or\s+equal\s+to)\s*(\d+)', '<=')
-            ]
+                (r'(\w+)\s*(?:>|greater\s+than|more\s+than)\s*(\d*\.?\d*)', '>'),
+                (r'(\w+)\s*(?:<|less\s+than|smaller\s+than)\s*(\d*\.?\d*)', '<'),
+                (r'(\w+)\s*(?:>=|greater\s+than\s+or\s+equal\s+to)\s*(\d*\.?\d*)', '>='),
+                (r'(\w+)\s*(?:<=|less\s+than\s+or\s+equal\s+to)\s*(\d*\.?\d*)', '<=')
+            ]               
             
             for pattern, operator in compare_patterns:
                 match = re.search(pattern, subtext)
@@ -212,11 +212,11 @@ class QueryGenerator:
     
     def _extract_table_name(self, text: str, available_tables: List[str]) -> Optional[str]:
         """Extract table name."""
-        text = text.lower()
+        text = text
         
         # Try direct matches first
         for table in available_tables:
-            if table.lower() in text:
+            if table in text:
                 return table
                 
         # Try looking after common prepositions
@@ -224,8 +224,8 @@ class QueryGenerator:
             match = re.search(f'{prep}\\s+(\\w+)', text)
             if match:
                 table_name = match.group(1)
-                if table_name in [t.lower() for t in available_tables]:
-                    return next(t for t in available_tables if t.lower() == table_name)
+                if table_name in [t for t in available_tables]:
+                    return next(t for t in available_tables if t == table_name)
                     
         return None
 

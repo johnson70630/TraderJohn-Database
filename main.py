@@ -1,6 +1,7 @@
 import os
 import json
 import logging
+import re
 from datetime import datetime
 import dotenv
 from textwrap import dedent
@@ -10,6 +11,7 @@ from telegram.ext import Application, CommandHandler, MessageHandler, CallbackCo
 from utils.data_processing import upload_json_to_mongodb, upload_csv_to_mysql
 from utils.query_data import test_database_connections, get_mysql_tables, get_mongodb_collections
 from utils.query_generator import QueryGenerator
+from utils.mongodb_query_generator import MongoDBQueryGenerator
 from utils.execute_query import QueryExecutor
 from utils.format import format_nested_fields
 from utils.samples import get_sample_data, get_sample_queries
@@ -33,6 +35,7 @@ dotenv.load_dotenv()
 
 # Initialize query generator and executor
 query_generator = QueryGenerator()
+mongodb_query_generator = MongoDBQueryGenerator()
 query_executor = QueryExecutor(
     mysql_config={
         'host': os.getenv('DB_HOST'),
@@ -350,54 +353,60 @@ async def handle_query(update: Update, context: CallbackContext) -> int:
             )
             return QUERY_DATA
 
-        # Get available tables based on selected database
-        available_tables = []
-        if selected_db == "Query MongoDB":
-            available_tables = context.user_data.get('mongodb_collections', [])
-        else:  # MySQL
-            available_tables = context.user_data.get('mysql_tables', [])
-
         # Handle MongoDB Query
         if selected_db == "Query MongoDB":
-            # Extract query components using the available tables
-            query_components = query_generator.extract_query_components(user_input, available_tables)
+            available_collections = context.user_data.get('mongodb_collections', [])
+            
+            # First use QueryGenerator to convert natural language to SQL components
+            query_components = query_generator.extract_query_components(user_input, available_collections)
             
             if not query_components['from']:
                 await update.message.reply_text(
                     f"Please specify a valid collection name.\n\n"
                     f"Available collections:\n" +
-                    "\n".join([f"• {coll}" for coll in available_tables])
+                    "\n".join([f"• {collection}" for collection in available_collections])
                 )
                 return QUERY_DATA
 
-            # Execute MongoDB query
             try:
-                mongo_query = {'find': {}}  # Default query
-                results = query_executor.execute_mongodb_query(query_components['from'], mongo_query)
-                results_list = list(results)[:10]
+                # Generate SQL query from components
+                sql_query = query_generator.generate_sql_query(query_components)
+                logger.info(f"Generated SQL query: {sql_query}")
                 
-                if results_list:
-                    # Send results in smaller chunks
-                    for i, doc in enumerate(results_list, 1):
-                        msg = json.dumps(doc, indent=2, default=str).replace('{', '\\{').replace('}', '\\}')
-                        await update.message.reply_text(
-                            f"Document {i}:\n```\n{msg}\n```",
-                            parse_mode="Markdown"
-                        )
-                    
-                    if len(results_list) == 10:
-                        await update.message.reply_text("(Showing first 10 documents)")
-                else:
-                    await update.message.reply_text("No documents found.")
-            
+                # Convert SQL to MongoDB query
+                mongo_query = mongodb_query_generator.generate_mongo_query(sql_query)
+                collection_name = mongo_query['collection']
+                pipeline = mongo_query['pipeline']
+                
+                # Format the MongoDB shell command
+                mongo_command = f"db.{collection_name}.aggregate({json.dumps(pipeline, indent=2)})"
+                
+                # Send the formatted command
+                await update.message.reply_text(
+                    f"```javascript\n{mongo_command}\n```",
+                    parse_mode="Markdown"
+                )
+
+                # Execute MongoDB query and get results
+                results = query_executor.execute_mongodb_query(collection_name, {"aggregate": pipeline})
+
+                if not results:
+                    await update.message.reply_text("No results found.")
+                    return QUERY_DATA
+
+                # Process results in smaller chunks
+                await process_and_send_results(update, results)
+
             except Exception as e:
                 logger.error(f"MongoDB execution error: {str(e)}")
                 await update.message.reply_text(f"Error executing query: {str(e)}")
-            
-            return QUERY_DATA
 
+            return QUERY_DATA
+        
         # Handle MySQL Query
         if selected_db == "Query MySQL":
+            available_tables = context.user_data.get('mysql_tables', [])
+            
             # Extract query components using the available tables
             query_components = query_generator.extract_query_components(user_input, available_tables)
             
@@ -434,11 +443,11 @@ async def handle_query(update: Update, context: CallbackContext) -> int:
                 await update.message.reply_text(f"Error executing query: {str(e)}")
             
             return QUERY_DATA
-        
+            
     except Exception as e:
-            logger.error(f"Query error: {str(e)}", exc_info=True)
-            await update.message.reply_text(f"Error processing query: {str(e)}")
-            return QUERY_DATA
+        logger.error(f"Query error: {str(e)}", exc_info=True)
+        await update.message.reply_text(f"Error processing query: {str(e)}")
+        return QUERY_DATA
             
 async def process_and_send_results(update: Update, results: List[Dict[str, Any]]) -> None:
     """Helper function to process and send query results in chunks"""
