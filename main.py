@@ -308,7 +308,8 @@ async def handle_database_selection(update: Update, context: CallbackContext) ->
                 "\n\n🔍 Query Examples:\n" +
                 "• Type table name to see first 10 rows\n" +
                 "• `select * from [table] where [condition]`\n" +
-                "• `find top 5 rows in [table] ordered by [column]`"
+                "• `show enginetype from cars group by enginetype having average price > 10000`\n" +
+                "• `show cars where price > 20000`\n"
             )
 
         context.user_data['selected_db'] = selection
