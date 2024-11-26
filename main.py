@@ -1,9 +1,9 @@
 import os
 import json
 import logging
-import re
 from datetime import datetime
 import dotenv
+from textwrap import dedent
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import Application, CommandHandler, MessageHandler, CallbackContext, ConversationHandler, filters
 
@@ -12,8 +12,9 @@ from utils.query_data import test_database_connections, get_mysql_tables, get_mo
 from utils.query_generator import QueryGenerator
 from utils.execute_query import QueryExecutor
 from utils.format import format_nested_fields
+from utils.samples import get_sample_data, get_sample_queries
 
-from typing import Dict, List, Tuple, Any, Optional, Union
+from typing import Dict, List, Any
 
 # Configure logging
 logging.basicConfig(
@@ -44,7 +45,7 @@ query_executor = QueryExecutor(
 )
 
 # States for ConversationHandler
-CHOOSING, UPLOAD_FILE, QUERY_DATA = range(3)
+CHOOSING, SAMPLE_QUERIES, UPLOAD_FILE, QUERY_DATA = range(4)
 
 async def start(update: Update, context: CallbackContext) -> int:
     """Start the conversation and show main menu."""
@@ -488,85 +489,69 @@ async def cancel(update: Update, context: CallbackContext) -> int:
         reply_markup=ReplyKeyboardRemove()
     )
     return ConversationHandler.END
+
 async def show_sample_queries(update: Update, context: CallbackContext) -> int:
-    """Show sample queries and their outputs with natural language descriptions."""
-    sample_queries = [
-        # MySQL Examples
-        {
-            "type": "MySQL",
-            "description": "Retrieve all movies released after the year 2000.",
-            "query": "SELECT movie, year_released FROM pixar_movies WHERE year_released > 2000;",
-            "output": "Movie           | Year Released\nFinding Nemo   | 2003\nThe Incredibles | 2004"
-        },
-        {
-            "type": "MySQL",
-            "description": "Find the top 5 movies with the highest Rotten Tomatoes ratings.",
-            "query": "SELECT movie, rotten_tomatoes_rating FROM pixar_movies ORDER BY rotten_tomatoes_rating DESC LIMIT 5;",
-            "output": "Movie           | Rotten Tomatoes Rating\nToy Story       | 100%\nFinding Nemo    | 99%"
-        },
-        {
-            "type": "MySQL",
-            "description": "Calculate the average IMDb rating of all Pixar movies.",
-            "query": "SELECT AVG(imdb_rating) AS average_rating FROM pixar_movies;",
-            "output": "Average IMDb Rating\n8.1"
-        },
-        {
-            "type": "MySQL",
-            "description": "List all movies directed by 'John Lasseter'.",
-            "query": "SELECT movie FROM pixar_movies WHERE director = 'John Lasseter';",
-            "output": "Movie\nToy Story\nA Bug's Life"
-        },
-        # MongoDB Examples
-        {
-            "type": "MongoDB",
-            "description": "Retrieve all orders where the price is greater than 100.",
-            "query": "db.orders.find({ price: { $gt: 100 } });",
-            "output": "[\n  { OrderID: 12345, Price: 120 },\n  { OrderID: 12346, Price: 150 }\n]"
-        },
-        {
-            "type": "MongoDB",
-            "description": "Calculate the total spending for each customer.",
-            "query": "db.customers.aggregate([ { $group: { _id: '$customer_id', totalSpent: { $sum: '$total_spent' } } } ]);",
-            "output": "[\n  { _id: 'C001', totalSpent: 5000 },\n  { _id: 'C002', totalSpent: 4500 }\n]"
-        },
-        {
-            "type": "MongoDB",
-            "description": "Find the average price of all products.",
-            "query": "db.products.aggregate([ { $group: { _id: null, avgPrice: { $avg: '$price' } } } ]);",
-            "output": "[\n  { _id: null, avgPrice: 75.5 }\n]"
-        },
-        {
-            "type": "MongoDB",
-            "description": "Count the number of orders placed by each customer.",
-            "query": "db.orders.aggregate([ { $group: { _id: '$customer_id', orderCount: { $sum: 1 } } } ]);",
-            "output": "[\n  { _id: 'C001', orderCount: 5 },\n  { _id: 'C002', orderCount: 3 }\n]"
-        },
+    """Show sample data and ask the user which kind of query sample they want."""
+    sample_data = get_sample_data()
+    
+    # Display sample data
+    await update.message.reply_text(
+        "📊 Sample Data for MySQL:\n\n"
+        f"```{sample_data['MySQL']}\n```"
+        "📊 Sample Data for MongoDB:\n\n"
+        f"```json\n{sample_data['MongoDB']}\n```",
+        parse_mode="Markdown"
+    )
+    
+    # Prepare keyboard options for query type selection
+    keyboard = [
+        ["Group By", "Join", "Sum"],
+        ["Order By", "Where", "Random"],
+        ["Back to Menu"]
     ]
-
-    response = "💡 **Sample Queries and Outputs**:\n\n"
-    keyboard = [["Back to Menu"]]
     reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True, resize_keyboard=True)
-    await update.message.reply_text(response, reply_markup=reply_markup, parse_mode="Markdown")
+    
+    await update.message.reply_text(
+        "Please choose the type of query sample you want to see:",
+        reply_markup=reply_markup
+    )
+    return SAMPLE_QUERIES
 
-    for i, example in enumerate(sample_queries, 1):
-        # Send the description
-        await update.message.reply_text(
-            f"**{i}. [{example['type']}]**\n\n"
-            f"**Description:** `{example['description']}`\n\n",
-            parse_mode="Markdown"
-        )
-        # Send the query
-        await update.message.reply_text(
-            f"**Query:**\n```{example['query']}```",
-            parse_mode="Markdown"
-        )
-        # Send the output
-        await update.message.reply_text(
-            f"**Output:**\n```\n{example['output']}\n```",
-            parse_mode="Markdown"
-        )
-
-    return CHOOSING
+async def handle_query_sample_selection(update: Update, context: CallbackContext) -> int:
+    """Handle the user's query type selection and show a sample query."""
+    query_type = update.message.text.strip()
+    
+    if query_type == "Back to Menu":
+        return await start(update, context)
+    
+    if query_type not in ["Group By", "Join", "Sum", "Order By", "Where", "Random"]:
+        await update.message.reply_text("Invalid selection. Please choose a valid query type.")
+        return SAMPLE_QUERIES
+    
+    # Get the selected sample query
+    if query_type == "Random":
+        sample_query = get_sample_queries()
+    else:
+        sample_query = get_sample_queries(type=query_type)
+    
+    # Show the sample query and results
+    await update.message.reply_text(
+        f"🔍 **Sample Query - `{sample_query['type']}`**\n\n"
+        f"💬 **Natural Language Description:**\n"
+        f"`{sample_query['natural_language']}`\n\n"
+        
+        f"🗄 **MySQL Query:**\n"
+        f"```\n{dedent(sample_query['mysql'])}\n```\n"
+        f"📋 **MySQL Query Result:**\n"
+        f"```{dedent(sample_query['mysql_result'])}\n```\n\n"
+        
+        f"🗄 **MongoDB Query:**\n"
+        f"```{dedent(sample_query['mongodb'])}\n```\n"
+        f"📋 **MongoDB Query Result:**\n"
+        f"```{dedent(sample_query['mongodb_result'])}```",
+        parse_mode="Markdown", reply_markup=ReplyKeyboardMarkup([["Back to Menu"]], resize_keyboard=True)
+    )
+    return SAMPLE_QUERIES
 
 def main() -> None:
     """Run the bot."""
@@ -583,6 +568,11 @@ def main() -> None:
                 MessageHandler(filters.Regex('^Sample Queries$'), show_sample_queries),
                 MessageHandler(filters.Regex('^Help$'), help_command),
                 MessageHandler(filters.Regex('^Exit$'), cancel),
+                MessageHandler(filters.Regex('^Back to Menu$'), start),
+                CommandHandler('start', start),
+            ],
+            SAMPLE_QUERIES: [
+                MessageHandler(filters.TEXT & ~filters.COMMAND, handle_query_sample_selection),
                 MessageHandler(filters.Regex('^Back to Menu$'), start),
                 CommandHandler('start', start),
             ],
