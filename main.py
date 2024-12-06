@@ -1,7 +1,6 @@
 import os
 import json
 import logging
-import re
 from datetime import datetime
 import dotenv
 from textwrap import dedent

@@ -1,4 +1,4 @@
-from typing import Dict, List, Any, Union
+from typing import Dict, List, Any
 from contextlib import contextmanager
 from mysql.connector import connect, Error as MySQLError
 from pymongo import MongoClient
