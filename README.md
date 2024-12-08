@@ -79,6 +79,27 @@ TraderJohn-Database/
 - `Back to menu`: Return to the main menu.
 - `Exit`: Exit the bot.
 
+**Sample Queries**
+```
+SQL:
+
+1. cars
+2. youtube_channel_real_performance_analytics
+3. show enginetype from cars group by enginetype having average price > 10000
+4. find price, citympg and peakrpm in cars
+5. show cars which price larger than 20000
+6. count total enginetype in cars grouped by enginetype
+
+MongoDB:
+
+1. find in iris_data which petalWidth larger than 1.5
+2. iris_data
+3. crime_rate
+4. count documents in iris_data grouped by species
+5. iris_data, show species grouped by species having petalWidth larger than 0.5
+6. iris_data, show species grouped by species having petalWidth larger than 1.5
+```
+
 
 ### License
 This project is licensed under the MIT License. See the [LICENSE](/LICENSE) file for details.
